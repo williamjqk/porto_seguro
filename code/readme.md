@@ -1,0 +1,4 @@
+- script.py: kaggle上一哥们的kernel（stack各种其他方法），效果还行
+- script_tf_lgb_v1001.py: 用AutoScaler和DataFrameImputer预处理
+- script_tf_lgb_v1002.py: 用AutoScaler和DataFrameImputer预处理，再接nn生成的特征
+- script_merge_test_out.py: 融合其他分类器的结果，平均输出
