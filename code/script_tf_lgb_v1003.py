@@ -11,14 +11,15 @@ import gc
 print('loading files...')
 
 base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
-train = pd.read_csv(base_path+'train_p.csv', na_values=-1)
-test = pd.read_csv(base_path+'test_p.csv', na_values=-1)
+train = pd.read_csv(base_path+'train.csv', na_values=-1)
+test = pd.read_csv(base_path+'test.csv', na_values=-1)
 
-train.shape
+
 train.isnull().sum()
 test.isnull().sum()
 
 print(train.shape, test.shape)
+Counter(train.dtypes)
 
 
 import numpy as np
@@ -93,7 +94,7 @@ tf_param = {
     # "layers": [4096,256,256,128],
     # "layers": [4096,2048,512,128],
     # "layers": [1024,512,256,128],
-    "layers": [1024,150,150],
+    "layers": [1024,512,256],
     "drop": 0.8,#0.2,#0.5, # in keras its drop, in tf its keep
     "noise_stddev": 0.2
 }
@@ -157,13 +158,13 @@ n_steps *= 2#1
 
 batch_gen = my_generator(X_tf, y_tf, batch_size=batch_size)
 
-## TRAIN nn:
-for step in range(n_steps):
-    # train and net output
-    X_batch, y_batch = next(batch_gen)
-    _, acc, pred = sess.run([train_op, accuracy, output], {tf_x: X_batch, tf_y: y_batch})
-    if step % 100 == 0:
-        print(f'tf trained {step} step: acc = {acc}')
+# ## TRAIN nn:
+# for step in range(n_steps):
+#     # train and net output
+#     X_batch, y_batch = next(batch_gen)
+#     _, acc, pred = sess.run([train_op, accuracy, output], {tf_x: X_batch, tf_y: y_batch})
+#     if step % 100 == 0:
+#         print(f'tf trained {step} step: acc = {acc}')
 
 
 
@@ -188,8 +189,8 @@ def gini_lgb(preds, dtrain):
 fc0_new_0 = sess.run(fc0, {tf_x: X_0})
 fc1_new_0 = sess.run(fc1, {tf_x: X_0})
 # Xnew_0 = np.hstack((X_0, fc0_new_0, fc1_new_0))
-Xnew_0 = np.hstack((X_0, fc0_new_0))
-# Xnew_0 = X_0
+# Xnew_0 = np.hstack((X_0, fc0_new_0))
+Xnew_0 = X_0
 Xnew_0.shape
 y_new_0 = y_0
 y_new_0.shape
@@ -197,8 +198,8 @@ y_new_0.shape
 fc0_new_1 = sess.run(fc0, {tf_x: X_1})
 fc1_new_1 = sess.run(fc1, {tf_x: X_1})
 # Xnew_1 = np.hstack((X_1, fc0_new_1, fc1_new_1))
-Xnew_1 = np.hstack((X_1, fc0_new_1))
-# Xnew_1 = X_1
+# Xnew_1 = np.hstack((X_1, fc0_new_1))
+Xnew_1 = X_1
 Xnew_1.shape
 
 
@@ -226,8 +227,12 @@ sub_train['target']=0
 
 # params = {'metric': 'auc', 'learning_rate' : 0.01, 'max_depth':8, 'max_bin':10,  'objective': 'binary',
 #           'feature_fraction': 0.8,'bagging_fraction':0.9,'bagging_freq':5,  'min_data': 500}
+# params = {'metric': 'auc', 'learning_rate' : 0.03, 'num_leaves': 64, 'boosting_type': 'gbdt',
+#   'objective': 'binary', 'feature_fraction': 0.9,'bagging_fraction':0.8,'bagging_freq':3}
 params = {'metric': 'auc', 'learning_rate' : 0.03, 'num_leaves': 64, 'boosting_type': 'gbdt',
-  'objective': 'binary', 'feature_fraction': 0.9,'bagging_fraction':0.8,'bagging_freq':3}
+  'objective': 'binary', 'feature_fraction': 0.9,'bagging_fraction':0.8,'bagging_freq':3,
+  'lambda_l1': 2.0, 'lambda_l2': 2.0, }
+
 
 
 eval_score_kfold = 0
@@ -245,8 +250,8 @@ for i, (train_index, test_index) in enumerate(skf.split(X, y)):
     sub_train['target'] += lgb_model.predict(Xnew_0, # train[features].values
                         num_iteration=lgb_model.best_iteration) / (kfold)
 print(f'AVERAGE eval score: {eval_score_kfold}')
-sub.to_csv(base_path+'test_sub_tf_lgb_scale_impute_v3.csv', index=False, float_format='%.5f')
-sub_train.to_csv(base_path+'train_sub_tf_lgb_scale_impute_v3.csv', index=False, float_format='%.5f')
+sub.to_csv(base_path+'test_sub_tf_lgb_scale_impute_v1003.csv', index=False, float_format='%.5f')
+sub_train.to_csv(base_path+'train_sub_tf_lgb_scale_impute_v1003.csv', index=False, float_format='%.5f')
 len(sub)
 
 # eval_res = dict()

@@ -2,3 +2,9 @@
 - script_tf_lgb_v1001.py: 用AutoScaler和DataFrameImputer预处理
 - script_tf_lgb_v1002.py: 用AutoScaler和DataFrameImputer预处理，再接nn生成的特征
 - script_merge_test_out.py: 融合其他分类器的结果，平均输出
+- script_xgb_aharless.py: cv:0.286,lb:0.284,ensemble:0.285, https://www.kaggle.com/aharless/xgboost-cv-lb-284
+- script_zusmani.py: lb:0.267, https://www.kaggle.com/zusmani/lgb-esemble-xgb-be-in-top-100-with-lb-0-285
+- script_kueipo.py: cv:0.283, self-lb:, ensemble-lb:0.285,
+- script_tf_lgb_v1003.py: （只用raw或+nn）用原始的所有特征, 对lgb进行了调参
+- script_v2.py: script.py去掉tensorflow，cv的时候避免overfit操作
+- stack_with_files.py: 根据其他模型生成train.csv和test.csv，而进行stacking
