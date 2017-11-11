@@ -1,4 +1,4 @@
-# %% XGBOOST and LGB from kaggle kernel https://www.kaggle.com/rshally/porto-xgb-lgb-kfold-lb-0-282¶
+base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
 from datetime import datetime
 from collections import Counter
 import pandas as pd
@@ -8,63 +8,125 @@ import lightgbm as lgb
 from sklearn.model_selection import StratifiedKFold
 import gc
 
-print('loading files...')
-
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
-train = pd.read_csv(base_path+'train.csv', na_values=-1)
-test = pd.read_csv(base_path+'test.csv', na_values=-1)
-
-
-train.isnull().sum()
-test.isnull().sum()
-
-print(train.shape, test.shape)
-Counter(train.dtypes)
-
-
+from datetime import datetime
+from collections import Counter
+import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
-from sklearn.base import TransformerMixin
-class DataFrameImputer(TransformerMixin):
-    def fit(self, X, y=None):
-        self.fill = pd.Series(["thisisanewclass"
-            if X[c].dtype == np.dtype('O') else X[c].mean() for c in X],
-            index=X.columns)
-        return self
-    def transform(self, X, y=None):
-        return X.fillna(self.fill)
-X = train.drop(['id', 'target'], axis=1)
-features = X.columns
-X = X.values
-y = train['target'].values
-sub=test['id'].to_frame()
-sub['target']=0
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+from multiprocessing import *
+import gc
+import warnings
+warnings.filterwarnings("ignore")
+
+import xgboost as xgb
+#######################################
+
+# Thanks Pascal and the1owl
+
+# Pascal's Recovery https://www.kaggle.com/pnagel/reconstruction-of-ps-reg-03
+# Froza's Baseline https://www.kaggle.com/the1owl/forza-baseline
+
+# single XGB LB 0.285 will release soon.
+
+#######################################
+
+#### Load Data
+train = pd.read_csv(base_path + 'train.csv')
+test = pd.read_csv(base_path + 'test.csv')
+
+sub = test['id'].to_frame()
+sub['target'] = 0
+
 sub_train = train['id'].to_frame()
-sub_train['target']=0
+sub_train['target'] = 0
 
-X_tr = train[features].astype(float)
-X_t = test[features].astype(float)
-X_all = pd.concat([X_tr,X_t], axis=0)
-# X_all.dtypes
-print(f'shapes of X_tr, X_t, X_all: {X_tr.shape}, {X_t.shape}, {X_all.shape}')
+###
+y = train['target'].values
+testid= test['id'].values
 
-my_imputer = DataFrameImputer()
-my_imputer.fit(X_all)
-X_tr_imputed = my_imputer.transform(X_tr)
+train.drop(['id','target'],axis=1,inplace=True)
+test.drop(['id'],axis=1,inplace=True)
+
+### Drop calc
+unwanted = train.columns[train.columns.str.startswith('ps_calc_')]
+train = train.drop(unwanted, axis=1)
+test = test.drop(unwanted, axis=1)
+
+### Great Recovery from Pascal's materpiece
+### Great Recovery from Pascal's materpiece
+### Great Recovery from Pascal's materpiece
+### Great Recovery from Pascal's materpiece
+### Great Recovery from Pascal's materpiece
+
+def recon(reg):
+    integer = int(np.round((40*reg)**2))
+    for a in range(32):
+        if (integer - a) % 31 == 0:
+            A = a
+    M = (integer - A)//31
+    return A, M
+train['ps_reg_A'] = train['ps_reg_03'].apply(lambda x: recon(x)[0])
+train['ps_reg_M'] = train['ps_reg_03'].apply(lambda x: recon(x)[1])
+train['ps_reg_A'].replace(19,-1, inplace=True)
+train['ps_reg_M'].replace(51,-1, inplace=True)
+test['ps_reg_A'] = test['ps_reg_03'].apply(lambda x: recon(x)[0])
+test['ps_reg_M'] = test['ps_reg_03'].apply(lambda x: recon(x)[1])
+test['ps_reg_A'].replace(19,-1, inplace=True)
+test['ps_reg_M'].replace(51,-1, inplace=True)
 
 
-from QPhantom.core.preprocessing import AutoScaler
-# from PPMoney.core.preprocessing import AutoScaler
+### Froza's baseline
+### Froza's baseline
+### Froza's baseline
+### Froza's baseline
+
+d_median = train.median(axis=0)
+d_mean = train.mean(axis=0)
+d_skew = train.skew(axis=0)
+one_hot = {c: list(train[c].unique()) for c in train.columns if c not in ['id','target']}
+
+def transform_df(df):
+    df = pd.DataFrame(df)
+    dcol = [c for c in df.columns if c not in ['id','target']]
+    df['ps_car_13_x_ps_reg_03'] = df['ps_car_13'] * df['ps_reg_03']
+    df['negative_one_vals'] = np.sum((df[dcol]==-1).values, axis=1)
+    for c in dcol:
+        if '_bin' not in c: #standard arithmetic
+            df[c+str('_median_range')] = (df[c].values > d_median[c]).astype(np.int)
+            df[c+str('_mean_range')] = (df[c].values > d_mean[c]).astype(np.int)
+
+    for c in one_hot:
+        if len(one_hot[c])>2 and len(one_hot[c]) < 7:
+            for val in one_hot[c]:
+                df[c+'_oh_' + str(val)] = (df[c].values == val).astype(np.int)
+    return df
+
+def multi_transform(df):
+    print('Init Shape: ', df.shape)
+    p = Pool(cpu_count())
+    df = p.map(transform_df, np.array_split(df, cpu_count()))
+    df = pd.concat(df, axis=0, ignore_index=True).reset_index(drop=True)
+    p.close(); p.join()
+    print('After Shape: ', df.shape)
+    return df
+
+train = multi_transform(train)
+test = multi_transform(test)
+X_all = np.vstack((train.values, test.values))
+
+# from QPhantom.core.preprocessing import AutoScaler
+from PPMoney.core.preprocessing import AutoScaler
 scaler = AutoScaler(threshold=20.0)
-scaler.fit(X_all.as_matrix())
+scaler.fit(X_all)
 
-X_0 = X_tr.as_matrix()
+X_0 = train.values
 X_0 = scaler.transform(X_0)
 X_0 = np.nan_to_num(X_0)
-y_0 = train['target'].values
+y_0 = y# train['target'].values
 print(f'X_0.shape, y_0.shape: {X_0.shape, y_0.shape}')
 # np.isnan(X_0).sum()
-X_1 = X_t.as_matrix()
+X_1 = test.values
 X_1 = scaler.transform(X_1)
 X_1 = np.nan_to_num(X_1)
 print(f'X_1.shape: {X_1.shape}')
@@ -82,8 +144,18 @@ X_0_.shape
 y_0.shape
 y_0_ = np.tile(y_0[mask_0], balance_d[1])
 y_0_.shape
-X_tf = np.vstack((X_0, X_0_))
-y_tf = np.hstack((y_0, y_0_))
+X_tf = X_0
+y_tf = y_0
+# X_tf = np.vstack((X_0, X_0_))
+# y_tf = np.hstack((y_0, y_0_))
+#
+# shuffle_random_range = np.arange(X_tf.shape[0])
+# for i in range(6):
+#     np.random.shuffle(shuffle_random_range)
+#
+# X_tf = X_tf[shuffle_random_range]
+# y_tf = y_tf[shuffle_random_range]
+
 print(f'X_tf.shape, y_tf.shape: {X_tf.shape, y_tf.shape}')
 
 import os
@@ -94,17 +166,12 @@ tf_param = {
     # "layers": [4096,256,256,128],
     # "layers": [4096,2048,512,128],
     # "layers": [1024,512,256,128],
-    "layers": [1024,512,256],
+    "layers": [2048,2,2],
     "drop": 0.8,#0.2,#0.5, # in keras its drop, in tf its keep
     "noise_stddev": 0.2
 }
 
-shuffle_random_range = np.arange(X_tf.shape[0])
-for i in range(6):
-    np.random.shuffle(shuffle_random_range)
 
-X_tf = X_tf[shuffle_random_range]
-y_tf = y_tf[shuffle_random_range]
 
 
 def gaussian_noise_layer(input_layer, std):
@@ -204,15 +271,15 @@ Xnew_1.shape
 
 
 
-
+# %%
 
 X = Xnew_0#X_0
 y = y_new_0#y_0
-sub = test['id'].to_frame()
-sub['target'] = 0
-
-sub_train = train['id'].to_frame()
-sub_train['target'] = 0
+# sub = test['id'].to_frame()
+# sub['target'] = 0
+#
+# sub_train = train['id'].to_frame()
+# sub_train['target'] = 0
 
 nrounds=10**6  # need to change to 2000
 kfold = 5  # need to change to 5
@@ -229,9 +296,9 @@ sub_train['target']=0
 #           'feature_fraction': 0.8,'bagging_fraction':0.9,'bagging_freq':5,  'min_data': 500}
 # params = {'metric': 'auc', 'learning_rate' : 0.03, 'num_leaves': 64, 'boosting_type': 'gbdt',
 #   'objective': 'binary', 'feature_fraction': 0.9,'bagging_fraction':0.8,'bagging_freq':3}
-params = {'metric': 'auc', 'learning_rate' : 0.03, 'num_leaves': 64, 'boosting_type': 'gbdt',
+params = {'metric': 'auc', 'learning_rate' : 0.01, 'num_leaves': 64, 'boosting_type': 'gbdt',
   'objective': 'binary', 'feature_fraction': 0.9,'bagging_fraction':0.8,'bagging_freq':3,
-  'lambda_l1': 2.0, 'lambda_l2': 2.0, }
+  'lambda_l1': 20.0, 'lambda_l2': 20.0, }
 
 
 
@@ -243,7 +310,7 @@ for i, (train_index, test_index) in enumerate(skf.split(X, y)):
     eval_res = dict()
     lgb_model = lgb.train(params, lgb.Dataset(X_train, label=y_train), nrounds,
                   lgb.Dataset(X_eval, label=y_eval), verbose_eval=100,
-                  feval=gini_lgb, evals_result=eval_res, early_stopping_rounds=100)
+                  feval=gini_lgb, evals_result=eval_res, early_stopping_rounds=200)
     # eval_score_kfold += eval_res['valid_0']['gini'][lgb_model.best_iteration-1] / (kfold)
     # sub['target'] += lgb_model.predict(Xnew_1, # test[features].values
     #                     num_iteration=lgb_model.best_iteration) / (kfold)
@@ -251,13 +318,13 @@ for i, (train_index, test_index) in enumerate(skf.split(X, y)):
     #                     num_iteration=lgb_model.best_iteration) / (kfold)
     sub['target'] += lgb_model.predict(Xnew_1,
                         num_iteration=lgb_model.best_iteration) / (kfold)
-    train_pred = lgb_model.predict(Xnew_0,
+    train_pred = lgb_model.predict(Xnew_0[test_index,:],
                         num_iteration=lgb_model.best_iteration)
     sub_train['target'].iloc[test_index] = train_pred
 
 print(f'AVERAGE eval score: {eval_score_kfold}')
-sub.to_csv(base_path+'test_sub_tf_lgb_scale_impute_v1003.csv', index=False, float_format='%.5f')
-sub_train.to_csv(base_path+'train_sub_tf_lgb_scale_impute_v1003.csv', index=False, float_format='%.5f')
+sub.to_csv(base_path+'test_sub_tf_lgb_scale_impute_v1004.csv', index=False, float_format='%.5f')
+sub_train.to_csv(base_path+'train_sub_tf_lgb_scale_impute_v1004.csv', index=False, float_format='%.5f')
 len(sub)
 
 # eval_res = dict()

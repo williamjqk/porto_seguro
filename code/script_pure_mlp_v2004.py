@@ -8,84 +8,65 @@ import numpy as np
 import xgboost as xgb
 import lightgbm as lgb
 from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import StandardScaler
 import gc
 
-print('loading files...')
-
+# os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
-# train = pd.read_csv(base_path+'train.csv', na_values=-1)
-# test = pd.read_csv(base_path+'test.csv', na_values=-1)
-train = pd.read_csv(base_path+'train_p.csv', na_values=-1)
-test = pd.read_csv(base_path+'test_p.csv', na_values=-1)
+test_dat = pd.read_csv(base_path + 'test.csv')
+train_dat = pd.read_csv(base_path + 'train.csv')
+submission = pd.read_csv(base_path + 'sample_submission.csv')
+
+train_y = train_dat['target']
+train_x = train_dat.drop(['target', 'id'], axis = 1)
+test_dat_0 = test_dat
+test_dat = test_dat.drop(['id'], axis = 1)
+
+merged_dat = pd.concat([train_x, test_dat],axis=0)
+
+#change data to float32
+for c, dtype in zip(merged_dat.columns, merged_dat.dtypes):
+    if dtype == np.float64:
+        merged_dat[c] = merged_dat[c].astype(np.float32)
+
+#one hot encode the categoricals
+cat_features = [col for col in merged_dat.columns if col.endswith('cat')]
+for column in cat_features:
+    temp=pd.get_dummies(pd.Series(merged_dat[column]))
+    merged_dat=pd.concat([merged_dat,temp],axis=1)
+    merged_dat=merged_dat.drop([column],axis=1)
+
+#standardize the scale of the numericals
+numeric_features = [col for col in merged_dat.columns if '_calc_' in  str(col)]
+numeric_features = [col for col in numeric_features if '_bin' not in str(col)]
 
 
-train.isnull().sum()
-test.isnull().sum()
-
-print(train.shape, test.shape)
-Counter(train.dtypes)
-
-
-import numpy as np
-from sklearn.preprocessing import LabelEncoder
-from sklearn.base import TransformerMixin
-# class DataFrameImputer(TransformerMixin):
-#     def fit(self, X, y=None):
-#         self.fill = pd.Series(["thisisanewclass"
-#             if X[c].dtype == np.dtype('O') else X[c].mean() for c in X],
-#             index=X.columns)
-#         return self
-#     def transform(self, X, y=None):
-#         return X.fillna(self.fill)
-class DataFrameImputer(TransformerMixin):
-    def fit(self, X, y=None):
-        self.fill = pd.Series(["NULL"
-            if X[c].dtype == np.dtype('O') else X[c].mean() if X[c].nunique() > 3 else X[c].mean() if X[c].count()==0 else -1.0 for c in X],
-            index=X.columns)
-        return self
-    def transform(self, X, y=None):
-        return X.fillna(self.fill)
-X = train.drop(['id', 'target'], axis=1)
-features = X.columns
-X = X.values
-y = train['target'].values
-sub=test['id'].to_frame()
-sub['target']=0
-sub_train = train['id'].to_frame()
-sub_train['target']=0
-
-X_tr = train[features].astype(float)
-X_t = test[features].astype(float)
-X_all = pd.concat([X_tr,X_t], axis=0)
-# X_all.dtypes
-print(f'shapes of X_tr, X_t, X_all: {X_tr.shape}, {X_t.shape}, {X_all.shape}')
-
-my_imputer = DataFrameImputer()
-my_imputer.fit(X_all)
-X_tr_imputed = my_imputer.transform(X_tr)
-
-
-# from QPhantom.core.preprocessing import AutoScaler
+# scaled_numerics = scaler.fit_transform(merged_dat[numeric_features])
 from PPMoney.core.preprocessing import AutoScaler
-scaler = AutoScaler(threshold=20.0)
-scaler.fit(X_all.as_matrix())
+scaler = StandardScaler()
+# scaler = AutoScaler(threshold=20.0)
+scaler.fit(merged_dat[numeric_features])
+scaled_numerics = scaler.transform(merged_dat[numeric_features])
+scaled_num_df = pd.DataFrame(scaled_numerics, columns =numeric_features )
 
-X_0 = X_tr.as_matrix()
-X_0 = scaler.transform(X_0)
-X_0 = np.nan_to_num(X_0)
-y_0 = train['target'].values
-print(f'X_0.shape, y_0.shape: {X_0.shape, y_0.shape}')
-# np.isnan(X_0).sum()
-X_1 = X_t.as_matrix()
-X_1 = scaler.transform(X_1)
-X_1 = np.nan_to_num(X_1)
-print(f'X_1.shape: {X_1.shape}')
+
+merged_dat = merged_dat.drop(numeric_features, axis=1)
+
+merged_dat = np.concatenate((merged_dat.values,scaled_num_df), axis = 1)
+
+train_x = merged_dat[:train_x.shape[0]]
+test_dat = merged_dat[train_x.shape[0]:]
+
+X_0 = train_x
+y_0 = train_y
+
+X_1 = test_dat
 
 # %%
-sub = test['id'].to_frame()
+sub = test_dat_0['id'].to_frame()
 sub['target'] = 0
 
-sub_train = train['id'].to_frame()
+sub_train = train_dat['id'].to_frame()
 sub_train['target'] = 0
 
 # %%
@@ -118,7 +99,7 @@ tf_param = {
     # "layers": [4096,2048,512,128],
     # "layers": [700,256,256,128],
     # "layers": [1024,1024,256,128],
-    "layers": [512,256,256,128],
+    "layers": [1024,256,256,128],
     "drop": 0.8,#0.2,#0.5, # in keras its drop, in tf its keep
     "noise_stddev": 0.2
 }
@@ -282,20 +263,33 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
     cv_gini_score_l.append(max(gini_eval_l))
     cv_gini_score += max(gini_eval_l) / nfold
     saver.restore(sess, base_path+'model.ckpt')
-    sub['target'] += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
+
+    y_out_stack = np.zeros((X_1.shape[0],))
+    i = 0
+    while True:
+        X_1_batch = X_1[i*10000:(i+1)*10000,:]
+        y_out_stack[i*10000:(i+1)*10000] += sess.run(y_pred_v, {tf_x: X_1_batch})[:,1] / nfold
+        i += 1
+        if i*10000 >= X_1.shape[0]:
+            break
+    sub['target'] += y_out_stack
+    # sub['target'] += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
     sub_train['target'].iloc[test_index] = sess.run(y_pred_v, {tf_x: X_test})[:,1]
     # y_pred += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
     print("COST {} seconds\n".format(time.time()-t0))
 
-print(f'CV gini score: {cv_gini_score:.6f}')
+print(f'CV gini score: {cv_gini_score:.6f}, score var:{np.var(cv_gini_score_l)}')
 print(f'cv_gini_score_l: {cv_gini_score_l}')
 print(f'average train steps: {sum(fold_step_l)/len(fold_step_l)}')
 
-
-sub.to_csv(base_path+'test_sub_v2001.csv', index=False, float_format='%.5f')
-sub_train.to_csv(base_path+'train_sub_v2001.csv', index=False, float_format='%.5f')
+# %%
+sub.to_csv(base_path+'test_dnn_camnugent_fe_v2004.csv', index=False, float_format='%.5f')
+sub_train.to_csv(base_path+'train_dnn_camnugent_fe_v2004.csv', index=False, float_format='%.5f')
 
 # -------- use tf END ---------
+print(f'CV gini score: {cv_gini_score:.6f}, score var:{np.var(cv_gini_score_l)}')
+print(f'cv_gini_score_l: {cv_gini_score_l}')
+print(f'average train steps: {sum(fold_step_l)/len(fold_step_l)}')
 
 
 gc.collect()

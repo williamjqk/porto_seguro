@@ -1,10 +1,23 @@
 - script.py: kaggle上一哥们的kernel（stack各种其他方法），效果还行
 - script_tf_lgb_v1001.py: 用AutoScaler和DataFrameImputer预处理
 - script_tf_lgb_v1002.py: 用AutoScaler和DataFrameImputer预处理，再接nn生成的特征
+- script_tf_lgb_v1003.py: 相比v1002加了正则项，生成能用于stacking的训练集
+- script_tf_lgb_v1004.py: 使用kueipo的特征，不训练，随机出来大量特征，让lgb选
 - script_merge_test_out.py: 融合其他分类器的结果，平均输出
 - script_xgb_aharless.py: cv:0.286,lb:0.284,ensemble:0.285, https://www.kaggle.com/aharless/xgboost-cv-lb-284
 - script_zusmani.py: lb:0.267, https://www.kaggle.com/zusmani/lgb-esemble-xgb-be-in-top-100-with-lb-0-285
 - script_kueipo.py: cv:0.283, self-lb:, ensemble-lb:0.285,
+- script_kueipo_v2.py: 把n折全用上，(cv:0.284061, self-lb:0.282, ensemble-lb:)(没调参)，(0.28405)(用kueipo的参数)
 - script_tf_lgb_v1003.py: （只用raw或+nn）用原始的所有特征, 对lgb进行了调参
-- script_v2.py: script.py去掉tensorflow，cv的时候避免overfit操作
+- script_v2.py: script.py去掉tensorflow，cv的时候避免overfit操作，（没用dnn、biggp、kinetics）
 - stack_with_files.py: 根据其他模型生成train.csv和test.csv，而进行stacking
+- script_pure_mlp_v2001.py: 纯nn模型
+- script_pure_mlp_v2002.py: 加一组并行的nn处理test数据，与train共享浅层layer。
+- script_pure_mlp_v2003.py: 好像和v2002差不多
+- script_pure_mlp_v2004.py: 基于v2001，使用camnugent的fe, AutoScaler比StandardScaler的cv好0.002, cv:0.263(0.265), 0.2643
+- script_pure_mlp_v2005.py: 在v2004的基础上，使用aquatic的FE。cv: 0.2679,0.2673,0.2684
+- script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
+- script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
+- script_tune_camnugent_dnn_v3.py: 基于script_tune_camnugent_dnn.py, 简单测试一下eval的效果，证明camnugent的fe对nn有效
+- script_ogrellier_xgb.py: ogrellier的kernel，cv:
+- script_aquatic_keras_nn.py: 

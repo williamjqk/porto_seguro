@@ -1,91 +1,91 @@
 # %% XGBOOST and LGB from kaggle kernel https://www.kaggle.com/rshally/porto-xgb-lgb-kfold-lb-0-282¶
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-from datetime import datetime
-from collections import Counter
-import pandas as pd
-import numpy as np
-import xgboost as xgb
-import lightgbm as lgb
-from sklearn.model_selection import StratifiedKFold
-import gc
-
-print('loading files...')
-
 base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
-# train = pd.read_csv(base_path+'train.csv', na_values=-1)
-# test = pd.read_csv(base_path+'test.csv', na_values=-1)
-train = pd.read_csv(base_path+'train_p.csv', na_values=-1)
-test = pd.read_csv(base_path+'test_p.csv', na_values=-1)
-
-
-train.isnull().sum()
-test.isnull().sum()
-
-print(train.shape, test.shape)
-Counter(train.dtypes)
-
-
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
-from sklearn.base import TransformerMixin
-# class DataFrameImputer(TransformerMixin):
-#     def fit(self, X, y=None):
-#         self.fill = pd.Series(["thisisanewclass"
-#             if X[c].dtype == np.dtype('O') else X[c].mean() for c in X],
-#             index=X.columns)
-#         return self
-#     def transform(self, X, y=None):
-#         return X.fillna(self.fill)
-class DataFrameImputer(TransformerMixin):
-    def fit(self, X, y=None):
-        self.fill = pd.Series(["NULL"
-            if X[c].dtype == np.dtype('O') else X[c].mean() if X[c].nunique() > 3 else X[c].mean() if X[c].count()==0 else -1.0 for c in X],
-            index=X.columns)
-        return self
-    def transform(self, X, y=None):
-        return X.fillna(self.fill)
-X = train.drop(['id', 'target'], axis=1)
-features = X.columns
-X = X.values
-y = train['target'].values
-sub=test['id'].to_frame()
-sub['target']=0
-sub_train = train['id'].to_frame()
-sub_train['target']=0
+np.random.seed(20)
+import pandas as pd
 
-X_tr = train[features].astype(float)
-X_t = test[features].astype(float)
-X_all = pd.concat([X_tr,X_t], axis=0)
-# X_all.dtypes
-print(f'shapes of X_tr, X_t, X_all: {X_tr.shape}, {X_t.shape}, {X_all.shape}')
+from tensorflow import set_random_seed
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
 
-my_imputer = DataFrameImputer()
-my_imputer.fit(X_all)
-X_tr_imputed = my_imputer.transform(X_tr)
+from sklearn.model_selection import StratifiedKFold
+
+'''Data loading & preprocessing
+'''
+
+X_train = pd.read_csv(base_path+'train.csv')
+X_test = pd.read_csv(base_path+'test.csv')
+
+test_dat_0 = X_test
+train_dat_0 = X_train
+
+X_train, y_train = X_train.iloc[:,2:], X_train.target
+X_test, test_id = X_test.iloc[:,1:], X_test.id
+
+#OHE / some feature engineering adapted from the1owl kernel at:
+#https://www.kaggle.com/the1owl/forza-baseline/code
+
+#excluded columns based on snowdog's old school nn kernel at:
+#https://www.kaggle.com/snowdog/old-school-nnet
+
+X_train['negative_one_vals'] = np.sum((X_train==-1).values, axis=1)
+X_test['negative_one_vals'] = np.sum((X_test==-1).values, axis=1)
+
+to_drop = ['ps_car_11_cat', 'ps_ind_14', 'ps_car_11', 'ps_car_14', 'ps_ind_06_bin',
+           'ps_ind_09_bin', 'ps_ind_10_bin', 'ps_ind_11_bin', 'ps_ind_12_bin',
+           'ps_ind_13_bin']
+
+cols_use = [c for c in X_train.columns if (not c.startswith('ps_calc_'))
+             & (not c in to_drop)]
+
+X_train = X_train[cols_use]
+X_test = X_test[cols_use]
+
+one_hot = {c: list(X_train[c].unique()) for c in X_train.columns}
+
+#note that this encodes the negative_one_vals column as well
+for c in one_hot:
+    if len(one_hot[c])>2 and len(one_hot[c]) < 105:
+        for val in one_hot[c]:
+            newcol = c + '_oh_' + str(val)
+            X_train[newcol] = (X_train[c].values == val).astype(np.int)
+            X_test[newcol] = (X_test[c].values == val).astype(np.int)
+        X_train.drop(labels=[c], axis=1, inplace=True)
+        X_test.drop(labels=[c], axis=1, inplace=True)
+
+X_train = X_train.replace(-1, np.NaN)  # Get rid of -1 while computing interaction col
+X_test = X_test.replace(-1, np.NaN)
+
+X_train['ps_car_13_x_ps_reg_03'] = X_train['ps_car_13'] * X_train['ps_reg_03']
+X_test['ps_car_13_x_ps_reg_03'] = X_test['ps_car_13'] * X_test['ps_reg_03']
+
+X_train = X_train.fillna(-1)
+X_test = X_test.fillna(-1)
+
+X_0 = X_train.values
+y_0 = y_train.values
+
+X_1 = X_test.values
 
 
-# from QPhantom.core.preprocessing import AutoScaler
+# %% scale
 from PPMoney.core.preprocessing import AutoScaler
+from sklearn.preprocessing import StandardScaler
+# scaler = StandardScaler()
 scaler = AutoScaler(threshold=20.0)
-scaler.fit(X_all.as_matrix())
 
-X_0 = X_tr.as_matrix()
+
+scaler.fit(np.vstack((X_0, X_1)))
 X_0 = scaler.transform(X_0)
-X_0 = np.nan_to_num(X_0)
-y_0 = train['target'].values
-print(f'X_0.shape, y_0.shape: {X_0.shape, y_0.shape}')
-# np.isnan(X_0).sum()
-X_1 = X_t.as_matrix()
 X_1 = scaler.transform(X_1)
-X_1 = np.nan_to_num(X_1)
-print(f'X_1.shape: {X_1.shape}')
 
 # %%
-sub = test['id'].to_frame()
+sub = test_dat_0['id'].to_frame()
 sub['target'] = 0
 
-sub_train = train['id'].to_frame()
+sub_train = train_dat_0['id'].to_frame()
 sub_train['target'] = 0
 
 # %%
@@ -97,6 +97,8 @@ from sklearn import metrics
 
 # -------- use tf BEGIN ---------
 # fix random seed for reproducibility
+from collections import Counter
+from datetime import datetime
 seed = datetime.now().second + datetime.now().minute
 np.random.seed(seed)
 # from sklearn import cross_validation
@@ -118,38 +120,52 @@ tf_param = {
     # "layers": [4096,2048,512,128],
     # "layers": [700,256,256,128],
     # "layers": [1024,1024,256,128],
-    "layers": [512,256,256,128],
-    "drop": 0.8,#0.2,#0.5, # in keras its drop, in tf its keep
-    "noise_stddev": 0.2
+    # "layers": [1024,256,256,128],
+    "layers": [1200,400,100],
+    "drop": 0.8,#0.8,#0.2,#0.5, # in keras its drop, in tf its keep
+    "noise_stddev": 0.2#0.2
 }
 
-
-
+def standard_layer(input_layer, n_nodes, std, keep_rate):
+    layer1 = tf.layers.dense(input_layer, n_nodes, tf.nn.relu)
+    layer2 = tf.nn.dropout(layer1, keep_rate)
+    layer3 = tf.layers.batch_normalization(layer2)
+    layer4 = gaussian_noise_layer(layer3, std)
+    return layer4
 def gaussian_noise_layer(input_layer, std):
     noise = tf.random_normal(shape=tf.shape(input_layer), mean=0.0, stddev=std, dtype=tf.float32)
     return input_layer + noise
 
 in_dim = X_0.shape[1]
+keep_rate = tf.placeholder_with_default(1.0, shape=())
+noise_std = tf.placeholder_with_default(0.0, shape=())
 tf_x = tf.placeholder(tf.float32, [None, in_dim]) #  X_train.shape
 tf_y = tf.placeholder(tf.int32, None)
-fc0 = tf.layers.dense(tf_x, tf_param['layers'][0])
-dropout0 = tf.nn.dropout(fc0, tf_param['drop'])
-batch0 = tf.layers.batch_normalization(dropout0)
-gs_noise0 = gaussian_noise_layer(batch0, tf_param['noise_stddev'])
-fc1 = tf.layers.dense(gs_noise0, tf_param['layers'][1], tf.nn.relu)
-dropout1 = tf.nn.dropout(fc1, tf_param['drop'])
-batch1 = tf.layers.batch_normalization(dropout1)
-gs_noise1 = gaussian_noise_layer(batch1, tf_param['noise_stddev'])
-fc2 = tf.layers.dense(gs_noise1, tf_param['layers'][2], tf.nn.relu)
-dropout2 = tf.nn.dropout(fc2, tf_param['drop'])
-batch2 = tf.layers.batch_normalization(dropout2)
-gs_noise2 = gaussian_noise_layer(batch2, tf_param['noise_stddev'])
-fc3 = tf.layers.dense(gs_noise2, tf_param['layers'][3], tf.nn.relu)
-dropout3 = tf.nn.dropout(fc3, tf_param['drop'])
-batch3 = tf.layers.batch_normalization(dropout3)
-gs_noise3 = gaussian_noise_layer(batch3, tf_param['noise_stddev'])
+# fc0 = tf.layers.dense(tf_x, tf_param['layers'][0])
+# dropout0 = tf.nn.dropout(fc0, tf_param['drop'])
+# batch0 = tf.layers.batch_normalization(dropout0)
+# gs_noise0 = gaussian_noise_layer(batch0, tf_param['noise_stddev'])
+# fc1 = tf.layers.dense(gs_noise0, tf_param['layers'][1], tf.nn.relu)
+# dropout1 = tf.nn.dropout(fc1, tf_param['drop'])
+# batch1 = tf.layers.batch_normalization(dropout1)
+# gs_noise1 = gaussian_noise_layer(batch1, tf_param['noise_stddev'])
+# fc2 = tf.layers.dense(gs_noise1, tf_param['layers'][2], tf.nn.relu)
+# dropout2 = tf.nn.dropout(fc2, tf_param['drop'])
+# batch2 = tf.layers.batch_normalization(dropout2)
+# gs_noise2 = gaussian_noise_layer(batch2, tf_param['noise_stddev'])
+# fc3 = tf.layers.dense(gs_noise2, tf_param['layers'][3], tf.nn.relu)
+# dropout3 = tf.nn.dropout(fc3, tf_param['drop'])
+# batch3 = tf.layers.batch_normalization(dropout3)
+# gs_noise3 = gaussian_noise_layer(batch3, tf_param['noise_stddev'])
+
+# hidden = tf.nn.dropout(tf_x, tf_param['drop'])
+hidden = tf_x
+for i in range(len(tf_param['layers'])):
+    hidden = standard_layer(hidden, tf_param['layers'][i], \
+                            noise_std, keep_rate)
 # output = tf.layers.dense(gs_noise3, 1, tf.nn.sigmoid)                     # output laye
-output = tf.layers.dense(gs_noise3, 2)                     # output laye
+# output = tf.layers.dense(gs_noise3, 2)                     # output laye
+output = tf.layers.dense(hidden, 2)
 
 y_pred_v = tf.nn.softmax(output)
 
@@ -202,6 +218,20 @@ def balance_train_data(X_0, y_0):
     print(f'X_tf.shape, y_tf.shape: {X_tf.shape, y_tf.shape}')
     return X_tf, y_tf
 
+def shuffle_train_data(X_0, y_0):
+
+    X_tf = X_0
+    y_tf = y_0
+
+    shuffle_random_range = np.arange(X_tf.shape[0])
+    for i in range(6):
+        np.random.shuffle(shuffle_random_range)
+
+    X_tf = X_tf[shuffle_random_range]
+    y_tf = y_tf[shuffle_random_range]
+
+    print(f'X_tf.shape, y_tf.shape: {X_tf.shape, y_tf.shape}')
+    return X_tf, y_tf
 
 
 def ks_score(label, preds):
@@ -225,7 +255,7 @@ import time
 y_pred = np.zeros(X_1.shape[0])
 saver = tf.train.Saver()
 
-batch_size = 100
+batch_size = 80
 n_steps = X_0.shape[0] // batch_size
 n_steps *= 1000#1
 
@@ -240,6 +270,7 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
     y_train_0, y_test = y_0[train_index], y_0[test_index]
 
     X_train,y_train = balance_train_data(X_train_0, y_train_0)
+    # X_train,y_train = shuffle_train_data(X_train_0, y_train_0)
     # X_train,y_train = (X_train_0, y_train_0)
 
     batch_gen = my_generator(X_train, y_train, batch_size=batch_size)
@@ -255,7 +286,8 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
         # train and net output
         X_batch, y_batch = next(batch_gen)
         # _, acc, pred = sess.run([train_op, accuracy, output], {tf_x: X_batch, tf_y: y_batch})
-        _, pred = sess.run([train_op, output], {tf_x: X_batch, tf_y: y_batch})
+        _, pred = sess.run([train_op, output], {tf_x: X_batch, tf_y: y_batch, \
+                            noise_std:tf_param['noise_stddev'], keep_rate:tf_param['drop']})
         if step % 100 == 0:
             y_train_pred = sess.run(y_pred_v, {tf_x: X_train_0})[:,1]
             auc_train = roc_auc_score(y_train_0, y_train_pred)
@@ -270,7 +302,7 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
             if np.argmax(gini_eval_l) == len(gini_eval_l)-1:
                 saver.save(sess, base_path+'model.ckpt')
 
-            if len(gini_eval_l) - np.argmax(gini_eval_l) > 50:
+            if len(gini_eval_l) - np.argmax(gini_eval_l) > 50:#50
                 print(f"Best step {np.argmax(gini_eval_l)*100} best EVAL gini score: {max(gini_eval_l):.6f}")
                 print(f"{step} TRAIN auc: {auc_train:.6f}, gini: {gini_train:.6f}; EVAL auc: {auc_eval:.6f}, gini: {gini_eval:.6f}")
                 break
@@ -282,20 +314,33 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
     cv_gini_score_l.append(max(gini_eval_l))
     cv_gini_score += max(gini_eval_l) / nfold
     saver.restore(sess, base_path+'model.ckpt')
-    sub['target'] += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
+
+    y_out_stack = np.zeros((X_1.shape[0],))
+    i = 0
+    while True:
+        X_1_batch = X_1[i*10000:(i+1)*10000,:]
+        y_out_stack[i*10000:(i+1)*10000] += sess.run(y_pred_v, {tf_x: X_1_batch})[:,1] / nfold
+        i += 1
+        if i*10000 >= X_1.shape[0]:
+            break
+    sub['target'] += y_out_stack
+    # sub['target'] += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
     sub_train['target'].iloc[test_index] = sess.run(y_pred_v, {tf_x: X_test})[:,1]
     # y_pred += sess.run(y_pred_v, {tf_x: X_1})[:,1] / nfold
     print("COST {} seconds\n".format(time.time()-t0))
 
-print(f'CV gini score: {cv_gini_score:.6f}')
+print(f'CV gini score: {cv_gini_score:.6f}, score var:{np.var(cv_gini_score_l)}')
 print(f'cv_gini_score_l: {cv_gini_score_l}')
 print(f'average train steps: {sum(fold_step_l)/len(fold_step_l)}')
 
-
-sub.to_csv(base_path+'test_sub_v2001.csv', index=False, float_format='%.5f')
-sub_train.to_csv(base_path+'train_sub_v2001.csv', index=False, float_format='%.5f')
+# %%
+sub.to_csv(base_path+'test_dnn_camnugent_fe_v2005.csv', index=False, float_format='%.5f')
+sub_train.to_csv(base_path+'train_dnn_camnugent_fe_v2005.csv', index=False, float_format='%.5f')
 
 # -------- use tf END ---------
+print(f'CV gini score: {cv_gini_score:.6f}, score var:{np.var(cv_gini_score_l)}')
+print(f'cv_gini_score_l: {cv_gini_score_l}')
+print(f'average train steps: {sum(fold_step_l)/len(fold_step_l)}')
 
 
 gc.collect()

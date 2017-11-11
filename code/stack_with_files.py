@@ -128,7 +128,7 @@ logreg.get_params()
 # print(f'AVERAGE eval score: {eval_score_kfold}')
 sub.to_csv(base_path+'stack_with_files_submit_20171031b.csv', index=False, float_format='%.5f')
 
-# %%
+# %% 次cell用的子模型结果是10.31-11.01生成的，不包含dnn、biggp、kinetics,
 import pandas as pd
 import numpy as np
 from scipy.stats import skew
