@@ -553,3 +553,118 @@ test['target'] = (2.5*test['xgb_ahar_rank'] + test['xgb_kueipo_rank'] + test['dn
                  test['cat_rank'] + test['kin_rank'] + test['gp_rank'] + test['lgb_sc_rank']) / (9.5 * test.shape[0])
 # The final submission
 test[['id', 'target']].to_csv(base_path + 'rank_avg_20171108c.csv.gz', index = False, compression = 'gzip')
+
+# %% 相比rank_avg_20171108c.csv.gz替换了v2004->v2006, 名次没有任何提升
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+# test files
+
+test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
+test_xgb_kueipo = pd.read_csv(base_path + 'test_kueipo_v2.csv')
+# test_xgb = pd.read_csv(base_path + 'test_sub_xgb.csv')
+# test_lgb = pd.read_csv(base_path + 'test_sub_lgb.csv')
+test_dnn = pd.read_csv(base_path + 'test_dnn_camnugent_fe_v2006.csv')
+test_up = pd.read_csv(base_path + 'test_submission.csv') # script_v2 里面ogrellier生成的代码
+test_cat = pd.read_csv(base_path + 'test_catboost_submission.csv')
+test_kin = pd.read_csv(base_path + 'test_uberKinetics.csv')
+test_gp = pd.read_csv(base_path + 'test_gpari.csv')
+test_lgb_sc = pd.read_csv(base_path + 'test_sub_lgb_scale_impute.csv') # code/script_tf_lgb_v1001.py生成的代码
+# test_tf_lgb_sc = pd.read_csv(base_path + 'test_sub_tf_lgb_scale_impute.csv')
+
+test=pd.read_csv(base_path + 'test.csv')
+
+test = pd.concat([test,
+                    test_xgb_ahar[['target']].rename(columns = {'target' : 'xgb_ahar'}),
+                    test_xgb_kueipo[['target']].rename(columns = {'target' : 'xgb_kueipo'}),
+                #    test_xgb[['target']].rename(columns = {'target' : 'xgb'}),
+                #    test_lgb[['target']].rename(columns = {'target' : 'lgb'}),
+                   test_dnn[['target']].rename(columns = {'target' : 'dnn'}),
+                   test_up[['target']].rename(columns = {'target' : 'up'}),
+                   test_cat[['target']].rename(columns = {'target' : 'cat'}),
+                   test_kin[['target']].rename(columns = {'target' : 'kin'}),
+                   test_gp[['target']].rename(columns = {'target' : 'gp'}),
+                   test_lgb_sc[['target']].rename(columns = {'target' : 'lgb_sc'}),
+                #    test_tf_lgb_sc[['target']].rename(columns = {'target' : 'tf_lgb_sc'})
+                  ], axis = 1)
+
+
+train_cols = ['xgb_ahar', 'xgb_kueipo', 'dnn', 'up', 'cat', 'kin', 'gp', 'lgb_sc']
+### preprocess
+for t in train_cols:
+    test[t + '_rank'] = test[t].rank()
+test['target'] = (2.5*test['xgb_ahar_rank'] + test['xgb_kueipo_rank'] + test['dnn_rank'] + test['up_rank'] + \
+                 test['cat_rank'] + test['kin_rank'] + test['gp_rank'] + test['lgb_sc_rank']) / (9.5 * test.shape[0])
+# The final submission
+test[['id', 'target']].to_csv(base_path + 'rank_avg_20171111a.csv.gz', index = False, compression = 'gzip')
+
+# %% 只有lb:0.286
+base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+import pandas as pd
+import numpy as np
+
+
+vpaslay_kagglemix = pd.read_csv(base_path + 'vpaslay_kagglemix.csv')
+tunguz_sub = pd.read_csv(base_path + 'tunguz_sub.csv.gz', compression = 'gzip')
+serigne_sub_harmonic = pd.read_csv(base_path + 'serigne_sub_harmonic.csv')
+# median_rank_submission = pd.read_csv('../input/median-rank-submission/median_rank_submission.csv')
+
+# Ensemble and create submission
+
+sub = pd.DataFrame()
+sub['id'] = vpaslay_kagglemix['id']
+sub['target'] = np.exp(np.mean(
+	[
+	vpaslay_kagglemix['target'].apply(lambda x: np.log(x)),\
+	tunguz_sub['target'].apply(lambda x: np.log(x)),\
+	serigne_sub_harmonic['target'].apply(lambda x: np.log(x)),\
+	# median_rank_submission['target'].apply(lambda x: np.log(x))\
+	], axis =0))
+
+sub.to_csv(base_path + 'rank_avg_20171115a.csv.gz', index = False, compression = 'gzip')
+
+# %% rank_avg_20171108c.csv.gz增加了kagglemix.csv, lb:0.285(kagglemix的权重6或20都是这个分数)
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+# test files
+
+test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
+test_xgb_kueipo = pd.read_csv(base_path + 'test_kueipo_v2.csv')
+# test_xgb = pd.read_csv(base_path + 'test_sub_xgb.csv')
+# test_lgb = pd.read_csv(base_path + 'test_sub_lgb.csv')
+test_dnn = pd.read_csv(base_path + 'test_dnn_camnugent_fe_v2004.csv')
+test_up = pd.read_csv(base_path + 'test_submission.csv') # script_v2 里面ogrellier生成的代码
+test_cat = pd.read_csv(base_path + 'test_catboost_submission.csv')
+test_kin = pd.read_csv(base_path + 'test_uberKinetics.csv')
+test_gp = pd.read_csv(base_path + 'test_gpari.csv')
+test_lgb_sc = pd.read_csv(base_path + 'test_sub_lgb_scale_impute.csv') # code/script_tf_lgb_v1001.py生成的代码
+# test_tf_lgb_sc = pd.read_csv(base_path + 'test_sub_tf_lgb_scale_impute.csv')
+test_vpaslay_mix = pd.read_csv(base_path + 'vpaslay_kagglemix.csv')
+
+test=pd.read_csv(base_path + 'test.csv')
+
+
+test = pd.concat([test,
+                    test_xgb_ahar[['target']].rename(columns = {'target' : 'xgb_ahar'}),
+                    test_xgb_kueipo[['target']].rename(columns = {'target' : 'xgb_kueipo'}),
+                #    test_xgb[['target']].rename(columns = {'target' : 'xgb'}),
+                #    test_lgb[['target']].rename(columns = {'target' : 'lgb'}),
+                   test_dnn[['target']].rename(columns = {'target' : 'dnn'}),
+                   test_up[['target']].rename(columns = {'target' : 'up'}),
+                   test_cat[['target']].rename(columns = {'target' : 'cat'}),
+                   test_kin[['target']].rename(columns = {'target' : 'kin'}),
+                   test_gp[['target']].rename(columns = {'target' : 'gp'}),
+                   test_lgb_sc[['target']].rename(columns = {'target' : 'lgb_sc'}),
+                #    test_tf_lgb_sc[['target']].rename(columns = {'target' : 'tf_lgb_sc'})
+                    test_vpaslay_mix[['target']].rename(columns = {'target' : 'vpaslay_mix'}),
+                  ], axis = 1)
+
+
+train_cols = ['xgb_ahar', 'xgb_kueipo', 'dnn', 'up', 'cat', 'kin', 'gp', 'lgb_sc', 'vpaslay_mix']
+### preprocess
+for t in train_cols:
+    test[t + '_rank'] = test[t].rank()
+test['target'] = (2.5*test['xgb_ahar_rank'] + test['xgb_kueipo_rank'] + test['dnn_rank'] + test['up_rank'] + \
+                 test['cat_rank'] + test['kin_rank'] + test['gp_rank'] + test['lgb_sc_rank'] +\
+                 20*test['vpaslay_mix'] ) / ((2.5+7+20) * test.shape[0])
+# The final submission
+test[['id', 'target']].to_csv(base_path + 'rank_avg_20171115b.csv.gz', index = False, compression = 'gzip')

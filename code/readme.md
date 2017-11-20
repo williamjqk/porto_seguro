@@ -15,9 +15,14 @@
 - script_pure_mlp_v2002.py: 加一组并行的nn处理test数据，与train共享浅层layer。
 - script_pure_mlp_v2003.py: 好像和v2002差不多
 - script_pure_mlp_v2004.py: 基于v2001，使用camnugent的fe, AutoScaler比StandardScaler的cv好0.002, cv:0.263(0.265), 0.2643
-- script_pure_mlp_v2005.py: 在v2004的基础上，使用aquatic的FE。cv: 0.2679,0.2673,0.2684
+- script_pure_mlp_v2005.py: 在v2004的基础上，使用aquatic的FE。**cv:0.2698,cv-var:3.7e-6**;  *cv: 0.2679,0.2673,0.2684*(这组结果预测时没有正确使用dropout和noiselayer)
+- script_pure_mlp_v2006.py: 写一个函数专门做大数据集的predict(通过切分为minibatch实现). **cv:0.2726,var:1.5e-5,lb:0.274**
+- script_pure_mlp_v2007.py: 只用有标记的dataset加上GAN试试, 效果很差不知道是不是G和D同时训练导致的，开v2009试试
+- script_pure_mlp_v2008.py: 在v2006的基础上改正了batch_normalization不同阶段的使用
+- script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试
+
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
 - script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
 - script_tune_camnugent_dnn_v3.py: 基于script_tune_camnugent_dnn.py, 简单测试一下eval的效果，证明camnugent的fe对nn有效
-- script_ogrellier_xgb.py: ogrellier的kernel，cv:
-- script_aquatic_keras_nn.py: 
+- script_ogrellier_xgb.py: ogrellier的kernel，有target_encode，cv:
+- script_aquatic_keras_nn.py:
