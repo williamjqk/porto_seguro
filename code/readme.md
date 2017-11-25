@@ -6,7 +6,7 @@
 - script_merge_test_out.py: 融合其他分类器的结果，平均输出
 - script_xgb_aharless.py: cv:0.286,lb:0.284,ensemble:0.285, https://www.kaggle.com/aharless/xgboost-cv-lb-284
 - script_zusmani.py: lb:0.267, https://www.kaggle.com/zusmani/lgb-esemble-xgb-be-in-top-100-with-lb-0-285
-- script_kueipo.py: cv:0.283, self-lb:, ensemble-lb:0.285,
+- script_kueipo.py: 对count数>2, <7的特征做one_hot; cv:0.283, self-lb:, ensemble-lb:0.285,
 - script_kueipo_v2.py: 把n折全用上，(cv:0.284061, self-lb:0.282, ensemble-lb:)(没调参)，(0.28405)(用kueipo的参数)
 - script_tf_lgb_v1003.py: （只用raw或+nn）用原始的所有特征, 对lgb进行了调参
 - script_v2.py: script.py去掉tensorflow，cv的时候避免overfit操作，（没用dnn、biggp、kinetics）
@@ -19,10 +19,10 @@
 - script_pure_mlp_v2006.py: 写一个函数专门做大数据集的predict(通过切分为minibatch实现). **cv:0.2726,var:1.5e-5,lb:0.274**
 - script_pure_mlp_v2007.py: 只用有标记的dataset加上GAN试试, 效果很差不知道是不是G和D同时训练导致的，开v2009试试
 - script_pure_mlp_v2008.py: 在v2006的基础上改正了batch_normalization不同阶段的使用
-- script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试
+- script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试, 有tensorboard
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
 - script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
 - script_tune_camnugent_dnn_v3.py: 基于script_tune_camnugent_dnn.py, 简单测试一下eval的效果，证明camnugent的fe对nn有效
-- script_ogrellier_xgb.py: ogrellier的kernel，有target_encode，cv:
+- script_ogrellier_xgb.py: ogrellier的kernel（这哥们好像用boruta + lightgbm选的特征，tilii7这哥们用boruta + RF选的特征），有target_encode，cv:
 - script_aquatic_keras_nn.py:
