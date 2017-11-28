@@ -20,6 +20,7 @@
 - script_pure_mlp_v2007.py: 只用有标记的dataset加上GAN试试, 效果很差不知道是不是G和D同时训练导致的，开v2009试试
 - script_pure_mlp_v2008.py: 在v2006的基础上改正了batch_normalization不同阶段的使用
 - script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试, 有tensorboard
+- script_pure_mlp_v2010.py: 在v2009的基础上，去掉一些注释，试试G网直接接浅层D网(对g_loss仿照gitlimlab的SSGAN加退火, 退火这个后面再试，先试试G网直接接浅层D网)
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
 - script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
