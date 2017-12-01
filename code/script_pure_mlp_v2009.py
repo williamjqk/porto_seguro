@@ -120,6 +120,7 @@ tf_param = {
     # "layers": [4000,2000,500,100], "drop": 0.5, "noise_stddev": 0.2 # 特别大的nn增加的capacity对数据空间的流形作用不大，而且增加了训练难度
 }
 
+in_dim = X_0.shape[1]
 BATCH_SIZE = 64
 LR_G = 0.001#0.0001           # learning rate for generator
 LR_D = 0.001#0.0001           # learning rate for discriminator
@@ -171,7 +172,7 @@ def layer_generator(G_in, n_layers_l, vscope_name='Generator'):
         G_out = tf.layers.dense(G_l, ART_COMPONENTS)
     return G_out
 
-in_dim = X_0.shape[1]
+
 
 
 

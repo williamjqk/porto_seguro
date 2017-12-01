@@ -14,8 +14,8 @@ np.random.seed(20)
 import pandas as pd
 
 from tensorflow import set_random_seed
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
+# from keras.models import Sequential
+# from keras.layers import Dense, Dropout
 
 from sklearn.model_selection import StratifiedKFold
 
@@ -123,6 +123,7 @@ tf_param = {
     # "layers": [4000,2000,500,100], "drop": 0.5, "noise_stddev": 0.2 # 特别大的nn增加的capacity对数据空间的流形作用不大，而且增加了训练难度
 }
 
+in_dim = X_0.shape[1]
 BATCH_SIZE = 64
 LR_G = 0.001#0.0001           # learning rate for generator
 LR_D = 0.001#0.0001           # learning rate for discriminator
@@ -161,10 +162,9 @@ def layer_generator(G_in, n_layers_l, vscope_name='Generator'):
         G_out = tf.layers.dense(G_l, ART_COMPONENTS)
     return G_out
 
-in_dim = X_0.shape[1]
 
 
-
+recon_weight = tf.placeholder_with_default(tf.cast(1.0, tf.float32), shape=())
 keep_rate = tf.placeholder_with_default(1.0, shape=())
 noise_std = tf.placeholder_with_default(0.0, shape=())
 tf_x = tf.placeholder(tf.float32, [None, in_dim]) #  X_train.shape
@@ -206,7 +206,15 @@ D_loss = tf.reduce_mean(d_loss_real + d_loss_fake)
 G_loss = tf.reduce_mean(tf.log(y_pred_v_1[:, -1]))
 # G_loss = tf.reduce_mean(y_pred_v_1[:, -1])
 
+def huber_loss(labels, predictions, delta=1.0):
+    residual = tf.abs(predictions - labels)
+    condition = tf.less(residual, delta)
+    small_res = 0.5 * tf.square(residual)
+    large_res = delta * residual - 0.5 * tf.square(delta)
+    return tf.where(condition, small_res, large_res)
+
 G_loss += tf.reduce_mean(huber_loss(output_G, tf_x)) * recon_weight
+# fd[self.recon_weight] = min(max(0, (1500 - step) / 1500), 1.0)*10
 
 
 train_D = tf.train.AdamOptimizer(LR_D).minimize(
@@ -372,7 +380,8 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
                                         noise_std:tf_param['noise_stddev'],
                                         keep_rate:tf_param['drop'],
                                         tf_gini_train: gini_train,
-                                        tf_gini_eval: gini_eval
+                                        tf_gini_eval: gini_eval,
+                                        recon_weight: min(max(0, (1500 - step) / 1500), 1.0)*10
                                     })
         else:
             result, pred, _0 = sess.run([merge_op, y_pred_v, train_D],
@@ -384,7 +393,8 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
                                         noise_std:tf_param['noise_stddev'],
                                         keep_rate:tf_param['drop'],
                                         tf_gini_train: gini_train,
-                                        tf_gini_eval: gini_eval
+                                        tf_gini_eval: gini_eval,
+                                        recon_weight: min(max(0, (1500 - step) / 1500), 1.0)*10
                                     })
 
 
