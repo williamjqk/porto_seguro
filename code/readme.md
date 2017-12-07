@@ -2,7 +2,7 @@
 - script_tf_lgb_v1001.py: 用AutoScaler和DataFrameImputer预处理
 - script_tf_lgb_v1002.py: 用AutoScaler和DataFrameImputer预处理，再接nn生成的特征
 - script_tf_lgb_v1003.py: 相比v1002加了正则项，生成能用于stacking的训练集
-- script_tf_lgb_v1004.py: 使用kueipo的特征，不训练，随机出来大量特征，让lgb选
+- script_tf_lgb_v1004.py: 使用kueipo的特征，不训练，随机出来大量特征，让lgb选, 输出evals_result观察每个cv的结果
 - script_merge_test_out.py: 融合其他分类器的结果，平均输出
 - script_xgb_aharless.py: cv:0.286,lb:0.284,ensemble:0.285, https://www.kaggle.com/aharless/xgboost-cv-lb-284
 - script_zusmani.py: lb:0.267, https://www.kaggle.com/zusmani/lgb-esemble-xgb-be-in-top-100-with-lb-0-285
@@ -19,8 +19,14 @@
 - script_pure_mlp_v2006.py: 写一个函数专门做大数据集的predict(通过切分为minibatch实现). **cv:0.2726,var:1.5e-5,lb:0.274**
 - script_pure_mlp_v2007.py: 只用有标记的dataset加上GAN试试, 效果很差不知道是不是G和D同时训练导致的，开v2009试试
 - script_pure_mlp_v2008.py: 在v2006的基础上改正了batch_normalization不同阶段的使用
-- script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试, 有tensorboard
-- script_pure_mlp_v2010.py: 在v2009的基础上，去掉一些注释，自动创建跟文件名相关的路径，使用continuation method加退火
+- script_pure_mlp_v2009.py: 学习gitlimlab的SSGAN，分阶段分别训练G和D试试, 有tensorboard; 在此程序文件的最后面，有with/without GAN的性能对比
+- script_pure_mlp_v2010.py: 在v2009的基础上，去掉一些注释，自动创建跟文件名相关的路径，使用continuation method加退火(目前有bug啊20171206！可能是训练没收敛（我在有道笔记中记录了相关记录）)
+- script_pure_mlp_v2011.py: 在v2010的基础上，使用RMSPropOptimizer，调低了总迭代次数和学习率
+
+- script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
+- script_reproduce_kaggle_1st_dae002.py: 在dae001的基础上，使用hyperopt调dae001的lightgbm参数
+
+
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
 - script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
