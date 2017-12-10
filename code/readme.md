@@ -23,8 +23,12 @@
 - script_pure_mlp_v2010.py: 在v2009的基础上，去掉一些注释，自动创建跟文件名相关的路径，使用continuation method加退火(目前有bug啊20171206！可能是训练没收敛（我在有道笔记中记录了相关记录）)
 - script_pure_mlp_v2011.py: 在v2010的基础上，使用RMSPropOptimizer，调低了总迭代次数和学习率
 
+- script_reproduce_kaggle_1st_dae00x1.py: 使用HDFDataSet把特征工程完的数据存到一个h5中
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
-- script_reproduce_kaggle_1st_dae002.py: 在dae001的基础上，使用hyperopt调dae001的lightgbm参数
+- script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
+- script_reproduce_kaggle_1st_dae003.py: 使用dae00x1生成的数据，在the3机器上运行了hyperopt
+- script_reproduce_kaggle_1st_dae004.py: 使用dae00x1生成的数据，修改hyperopt的space，在the5机器上运行
+
 
 
 

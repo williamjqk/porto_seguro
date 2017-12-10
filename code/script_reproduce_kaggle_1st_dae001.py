@@ -140,7 +140,7 @@ test_scores_l, test_predict_kfold, gbdt_model = lgb_cv_scores_testset(lgb, param
 
 print(f'DATASET shapes: X_0.shape, X_1.shape: {X_0.shape, X_1.shape}')
 print(f'gini-avg-score: {np.mean(test_scores_l):.6f}, cv-std: {np.std(test_scores_l):.6f}')
-# gini-avg-score: 0.287981, cv-std: 0.004854 # NOTE: this result is the same as mjahrer's #1
+# gini-avg-score: 0.287981, cv-std: 0.004854, PublicLB: 0.28380, PrivateLB: 0.29065 # NOTE: this result is the same as mjahrer's #1
 
 
 sub['target'] = np.mean(test_predict_kfold, axis=1)
