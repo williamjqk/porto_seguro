@@ -178,3 +178,23 @@ import json
 with open(os.path.join(model_path, 'best_model.json'), 'w') as f:
     json.dump({'best_auc': best_auc, 'best_hyperparam': best_hyperparam, 'best_model_path': best_model_path},
                 f, ensure_ascii=False, indent=2, separators=(',', ': '))
+
+# %% reload data and the best model to predict testset
+from PPMoney.core.data import HDFDataSet
+dataset_load = HDFDataSet(os.path.join(data_path, 'mjahrer_1st_test.dataset'), chunk_size=2048)
+
+X_test = dataset_load['feature']
+print(f'Shape of X_test: {X_test.shape}')
+
+best_model_path = os.path.join(model_root, 'e1422032-dcff-11e7-966f-0cc47a64aaf0/model/00890.model')
+
+import lightgbm as lgb
+model = lgb.Booster(model_file=best_model_path)
+y_test = model.predict(X_test)
+
+X_test_raw = pd.read_csv(base_path+'test.csv')
+sub = X_test_raw['id'].to_frame()
+sub['target'] = 0
+sub['target'] = y_test
+sub.to_csv(os.path.join(model_path, 'test_'+model_name+'.csv.gz'), index=False, float_format='%.5f', compression='gzip')
+# test_porto_seguro_dae004.csv.gz, eval: 0.286, PublicLB: 0.28090, PrivateLB: 0.28720

@@ -75,3 +75,46 @@ dataset_t.add({'feature': X_1})
 dataset_load = HDFDataSet(os.path.join(data_path, 'mjahrer_1st_train.dataset'), chunk_size=2048)
 dataset_load['feature']
 dataset_load['label']
+
+# %% 使用RankGauss处理非bin数据并存成h5
+import os
+import numpy as np
+import pandas as pd
+from PPMoney.core.data import HDFDataSet
+os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+
+model_name = 'porto_seguro_dae00x1'
+data_path = '/home/ljc/data/porto_seguro_dae'
+
+dataset_tr = HDFDataSet(os.path.join(data_path, 'mjahrer_1st_train.dataset'), chunk_size=2048)
+dataset_t = HDFDataSet(os.path.join(data_path, 'mjahrer_1st_test.dataset'), chunk_size=2048)
+
+need_rankgauss_cols = []
+for i in range(221):
+    length = len(np.unique(dataset_tr['feature'][:,i]))
+    print(f'{i}: {length}')
+    if length > 2:
+        need_rankgauss_cols.append(i)
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import QuantileTransformer
+
+# x0 = dataset_tr['feature'][:,0]
+# q_trans = QuantileTransformer(output_distribution='normal')
+# x0_qt = q_trans.fit_transform(x0.reshape(-1,1))
+# pd.DataFrame(x0_qt).hist()
+# plt.show()
+
+X_not_bin = np.vstack((dataset_tr['feature'][:,0:37], dataset_t['feature'][:,0:37]))
+q_trans = QuantileTransformer(output_distribution='uniform')
+q_trans.fit(X_not_bin)
+
+X0_not_bin = q_trans.transform(dataset_tr['feature'][:,0:37])
+dataset_tr['quantile_feature'] = np.hstack((X0_not_bin, dataset_tr['feature'][:,37:]))
+dataset_tr['quantile_feature'].shape
+
+X1_not_bin = q_trans.transform(dataset_t['feature'][:,0:37])
+dataset_t['quantile_feature'] = np.hstack((X1_not_bin, dataset_t['feature'][:,37:]))
+dataset_t['quantile_feature'].shape

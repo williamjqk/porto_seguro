@@ -27,9 +27,12 @@
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
 - script_reproduce_kaggle_1st_dae003.py: 使用dae00x1生成的数据，在the3机器上运行了hyperopt
-- script_reproduce_kaggle_1st_dae004.py: 使用dae00x1生成的数据，修改hyperopt的space，在the5机器上运行
-
-
+- script_reproduce_kaggle_1st_dae004.py: 使用dae00x1生成的数据，修改hyperopt的space，在the5机器上运行; 在最后的cell使用best model做预测
+- script_reproduce_kaggle_1st_dae005.py: 希望实现mjahrer的#2的dae模型; 加了scaled_feature的处理程序（其实这个应该在dae00x1中做，在添加完hdf后我已经给注释掉了）
+- script_reproduce_kaggle_1st_dae006.py: fix了batch generator，fix了bn的phase_train问题; 有错误啊最后一层不应该用dropout
+- script_reproduce_kaggle_1st_dae007.py: 将dae006生成的dae_hidden_feature喂给lgb
+- script_reproduce_kaggle_1st_dae008.py: 将dae006生成的数据给nn, 太耗内存
+- script_reproduce_kaggle_1st_dae009.py: dae008太耗内存，重写batch_generator和balance_train_data
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
