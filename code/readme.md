@@ -32,7 +32,12 @@
 - script_reproduce_kaggle_1st_dae006.py: fix了batch generator，fix了bn的phase_train问题; 有错误啊最后一层不应该用dropout
 - script_reproduce_kaggle_1st_dae007.py: 将dae006生成的dae_hidden_feature喂给lgb
 - script_reproduce_kaggle_1st_dae008.py: 将dae006生成的数据给nn, 太耗内存
-- script_reproduce_kaggle_1st_dae009.py: dae008太耗内存，重写batch_generator和balance_train_data
+- script_reproduce_kaggle_1st_dae009.py: dae008太耗内存，重写batch_generator和balance_train_data, 用了Adam
+- script_reproduce_kaggle_1st_dae010.py: 使用PPMoney的DataQueue
+- script_reproduce_kaggle_1st_dae011.py: 不把所有X数据读入内存，每次根据索引从h5中读batch, 又慢又费内存
+- script_reproduce_kaggle_1st_dae012.py: 根据dae009重新写, 使用DataQueue的单线程
+- script_reproduce_kaggle_1st_dae013.py: 不使用DataQueue和batch_idx_gen, 跑起来需要100G内存，用了RMSProp
+- script_reproduce_kaggle_1st_dae014.py: 基于dae006，最后一层不加dropout和activation
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
