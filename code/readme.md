@@ -38,6 +38,8 @@
 - script_reproduce_kaggle_1st_dae012.py: 根据dae009重新写, 使用DataQueue的单线程
 - script_reproduce_kaggle_1st_dae013.py: 不使用DataQueue和batch_idx_gen, 跑起来需要100G内存，用了RMSProp
 - script_reproduce_kaggle_1st_dae014.py: 基于dae006，最后一层不加dropout和activation
+- script_reproduce_kaggle_1st_dae015.py: 从HDFDataSet读数据，存成tfrecord的格式
+- script_reproduce_kaggle_1st_dae016.py: 使用dae015生成的tfrecord训练dae特征（重复dae014修改了optimizer和learning_rate）
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
