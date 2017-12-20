@@ -24,6 +24,7 @@
 - script_pure_mlp_v2011.py: 在v2010的基础上，使用RMSPropOptimizer，调低了总迭代次数和学习率
 
 - script_reproduce_kaggle_1st_dae00x1.py: 使用HDFDataSet把特征工程完的数据存到一个h5中
+- script_reproduce_kaggle_1st_dae00x2.py: 在dae00x1和dae015的基础上，使用RankGauss归一化非binary的特征，并存成tfrecord
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
 - script_reproduce_kaggle_1st_dae003.py: 使用dae00x1生成的数据，在the3机器上运行了hyperopt
@@ -40,6 +41,7 @@
 - script_reproduce_kaggle_1st_dae014.py: 基于dae006，最后一层不加dropout和activation
 - script_reproduce_kaggle_1st_dae015.py: 从HDFDataSet读数据，存成tfrecord的格式
 - script_reproduce_kaggle_1st_dae016.py: 使用dae015生成的tfrecord训练dae特征（重复dae014修改了optimizer和learning_rate）
+- script_reproduce_kaggle_1st_dae017.py: 使用dae00x2生成的tfrecord训练dae特征, 其他跟dae016一样
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
