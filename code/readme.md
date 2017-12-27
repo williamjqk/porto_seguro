@@ -37,11 +37,13 @@
 - script_reproduce_kaggle_1st_dae010.py: 使用PPMoney的DataQueue
 - script_reproduce_kaggle_1st_dae011.py: 不把所有X数据读入内存，每次根据索引从h5中读batch, 又慢又费内存
 - script_reproduce_kaggle_1st_dae012.py: 根据dae009重新写, 使用DataQueue的单线程
-- script_reproduce_kaggle_1st_dae013.py: 不使用DataQueue和batch_idx_gen, 跑起来需要100G内存，用了RMSProp
+- script_reproduce_kaggle_1st_dae013.py: 训练有监督nn，不使用DataQueue和batch_idx_gen, 跑起来需要100G内存，用了RMSProp
 - script_reproduce_kaggle_1st_dae014.py: 基于dae006，最后一层不加dropout和activation
 - script_reproduce_kaggle_1st_dae015.py: 从HDFDataSet读数据，存成tfrecord的格式
 - script_reproduce_kaggle_1st_dae016.py: 使用dae015生成的tfrecord训练dae特征（重复dae014修改了optimizer和learning_rate）
 - script_reproduce_kaggle_1st_dae017.py: 使用dae00x2生成的tfrecord训练dae特征, 其他跟dae016一样
+- script_reproduce_kaggle_1st_dae018.py: 载入并复用dae017的model，有监督nn参考了一下dae013，optimizer参考了dae017
+- script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
