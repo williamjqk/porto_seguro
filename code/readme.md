@@ -25,6 +25,7 @@
 
 - script_reproduce_kaggle_1st_dae00x1.py: 使用HDFDataSet把特征工程完的数据存到一个h5中
 - script_reproduce_kaggle_1st_dae00x2.py: 在dae00x1和dae015的基础上，使用RankGauss归一化非binary的特征，并存成tfrecord
+- script_reproduce_kaggle_1st_dae00x3.py: 在dae00x2的基础上，将整个训练集分成（训练集，验证集）存成2个tfrecord文件
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
 - script_reproduce_kaggle_1st_dae003.py: 使用dae00x1生成的数据，在the3机器上运行了hyperopt
@@ -33,7 +34,7 @@
 - script_reproduce_kaggle_1st_dae006.py: fix了batch generator，fix了bn的phase_train问题; 有错误啊最后一层不应该用dropout
 - script_reproduce_kaggle_1st_dae007.py: 将dae006生成的dae_hidden_feature喂给lgb
 - script_reproduce_kaggle_1st_dae008.py: 将dae006生成的数据给nn, 太耗内存
-- script_reproduce_kaggle_1st_dae009.py: dae008太耗内存，重写batch_generator和balance_train_data, 用了Adam
+- script_reproduce_kaggle_1st_dae009.py: 使用dae00x1生成的特征，dae008太耗内存，重写batch_generator和balance_train_data, 用了Adam
 - script_reproduce_kaggle_1st_dae010.py: 使用PPMoney的DataQueue
 - script_reproduce_kaggle_1st_dae011.py: 不把所有X数据读入内存，每次根据索引从h5中读batch, 又慢又费内存
 - script_reproduce_kaggle_1st_dae012.py: 根据dae009重新写, 使用DataQueue的单线程
@@ -43,7 +44,8 @@
 - script_reproduce_kaggle_1st_dae016.py: 使用dae015生成的tfrecord训练dae特征（重复dae014修改了optimizer和learning_rate）
 - script_reproduce_kaggle_1st_dae017.py: 使用dae00x2生成的tfrecord训练dae特征, 其他跟dae016一样
 - script_reproduce_kaggle_1st_dae018.py: 载入并复用dae017的model，有监督nn参考了一下dae013，optimizer参考了dae017
-- script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件
+- script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件。会根据dae018不同的名字改里面model_name的名字。(dae017,dae018,dae019都存在一个很蠢的问题，每次都要重新拼接graph、重新处理tfrecord的iterator来兼容新的graph，应该形成一个统一的方案，包括：autoencoder、training、cv、predict)
+- script_reproduce_kaggle_1st_dae020.py: 在dae018的基础上，使用dae00x3生成的（训练集，验证集）+ feedable iterator
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
