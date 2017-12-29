@@ -26,6 +26,7 @@
 - script_reproduce_kaggle_1st_dae00x1.py: 使用HDFDataSet把特征工程完的数据存到一个h5中
 - script_reproduce_kaggle_1st_dae00x2.py: 在dae00x1和dae015的基础上，使用RankGauss归一化非binary的特征，并存成tfrecord
 - script_reproduce_kaggle_1st_dae00x3.py: 在dae00x2的基础上，将整个训练集分成（训练集，验证集）存成2个tfrecord文件
+- script_reproduce_kaggle_1st_dae00x4.py: 在dae00x3的基础上改了新的路径base_path和data_path
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
 - script_reproduce_kaggle_1st_dae003.py: 使用dae00x1生成的数据，在the3机器上运行了hyperopt
@@ -46,6 +47,7 @@
 - script_reproduce_kaggle_1st_dae018.py: 载入并复用dae017的model，有监督nn参考了一下dae013，optimizer参考了dae017
 - script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件。会根据dae018不同的名字改里面model_name的名字。(dae017,dae018,dae019都存在一个很蠢的问题，每次都要重新拼接graph、重新处理tfrecord的iterator来兼容新的graph，应该形成一个统一的方案，包括：autoencoder、training、cv、predict)
 - script_reproduce_kaggle_1st_dae020.py: 在dae018的基础上，使用dae00x3生成的（训练集，验证集）+ feedable iterator
+- script_reproduce_kaggle_1st_dae021.py: 在dae020d的基础上，把ljc改成tom了，修改了一些超参数
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
