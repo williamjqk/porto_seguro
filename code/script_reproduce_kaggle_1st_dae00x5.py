@@ -73,7 +73,7 @@ import numpy as np
 import pandas as pd
 from scipy.special import erfinv
 from scipy.stats import rankdata
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 def rank_gauss_old(x):
     # x is numpy vector
@@ -93,6 +93,7 @@ def rank_gauss(x):
     x2 = np.empty(x.shape[0])
     for i in range(x.shape[0]):
         x2[i] = rg_unique[dense_rank[i]]
+    return x2
 
 # os.path.join(data_path, train_filename)
 # os.path.join(data_path, test_filename)

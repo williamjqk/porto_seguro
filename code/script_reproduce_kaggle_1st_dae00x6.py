@@ -95,6 +95,7 @@ def rank_gauss(x):
     x2 = np.empty(x.shape[0])
     for i in range(x.shape[0]):
         x2[i] = rg_unique[dense_rank[i]]
+    return x2
 
 # os.path.join(data_path, train_filename)
 # os.path.join(data_path, test_filename)
