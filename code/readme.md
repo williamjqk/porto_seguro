@@ -29,6 +29,7 @@
 - script_reproduce_kaggle_1st_dae00x3.py: 在dae00x2的基础上，将整个训练集分成（训练集，验证集）存成2个tfrecord文件
 - script_reproduce_kaggle_1st_dae00x4.py: 在dae00x3的基础上改了新的路径base_path和data_path
 - script_reproduce_kaggle_1st_dae00x5.py: 在dae00x2b的基础上修改了rank_gauss（使用了scipy.stats.rankdata的dense模式）
+- script_reproduce_kaggle_1st_dae00x6.py: 在dae00x4的基础上使用新的rank_gauss(和dae00x5一样)
 
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
