@@ -2,9 +2,10 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 base_path = '/home/tom/data/kaggle/porto_seguro_input'
+data_path = '/home/tom/data/kaggle/porto_seguro_dae'
 
 model_name = 'porto_seguro_dae00x6'
-data_path = '/home/tom/data/kaggle/porto_seguro_dae'
+
 model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
