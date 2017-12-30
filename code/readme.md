@@ -29,7 +29,7 @@
 - script_reproduce_kaggle_1st_dae00x3.py: 在dae00x2的基础上，将整个训练集分成（训练集，验证集）存成2个tfrecord文件
 - script_reproduce_kaggle_1st_dae00x4.py: 在dae00x3的基础上改了新的路径base_path和data_path
 - script_reproduce_kaggle_1st_dae00x5.py: 在dae00x2b的基础上修改了rank_gauss（使用了scipy.stats.rankdata的dense模式）
-- script_reproduce_kaggle_1st_dae00x6.py: 在dae00x4的基础上使用新的rank_gauss(和dae00x5一样)
+- script_reproduce_kaggle_1st_dae00x6.py: 生成(train,valid)，在dae00x4的基础上使用新的rank_gauss(和dae00x5一样)
 
 - script_reproduce_kaggle_1st_dae001.py: 希望复现本次比赛第一的方案，首先要复现出特征工程的内容; 复现了mjahrer的#1模型
 - script_reproduce_kaggle_1st_dae002.py: 使用hyperopt调sklearn伪造数据的lightgbm参数
@@ -51,6 +51,7 @@
 - script_reproduce_kaggle_1st_dae018.py: 载入并复用dae017的model，有监督nn参考了一下dae013，optimizer参考了dae017
 - script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件。会根据dae018不同的名字改里面model_name的名字。(dae017,dae018,dae019都存在一个很蠢的问题，每次都要重新拼接graph、重新处理tfrecord的iterator来兼容新的graph，应该形成一个统一的方案，包括：autoencoder、training、cv、predict)
 - script_reproduce_kaggle_1st_dae020.py: 在dae018的基础上，使用dae00x3生成的（训练集，验证集）+ feedable iterator
+- script_reproduce_kaggle_1st_dae021.py: 使用dae00x5的特征，其他跟dae017一样
 
 
 
