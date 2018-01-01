@@ -89,10 +89,10 @@ valid_handle = sess.run(valid_iterator.string_handle())
 saver = tf.train.import_meta_graph(stored_model_meta, input_map={"denoise_autoencoder/add:0": next_feature})
 saver.restore(sess,tf.train.latest_checkpoint(stored_model_path))
 graph = tf.get_default_graph()
-dae_h1 = graph.get_tensor_by_name("denoise_autoencoder/add_1:0")
-dae_h2 = graph.get_tensor_by_name("denoise_autoencoder/add_2:0")
-dae_h3 = graph.get_tensor_by_name("denoise_autoencoder/add_3:0")
-traing_phase = graph.get_tensor_by_name('PlaceholderWithDefault_3:0')
+dae_h1 = graph.get_tensor_by_name("denoise_autoencoder/layer1_relu:0")
+dae_h2 = graph.get_tensor_by_name("denoise_autoencoder/layer2_relu:0")
+dae_h3 = graph.get_tensor_by_name("denoise_autoencoder/layer3_relu:0")
+# traing_phase = graph.get_tensor_by_name('PlaceholderWithDefault_3:0')
 concat_x = tf.concat([dae_h1, dae_h2, dae_h3], axis=1)
 
 
@@ -208,7 +208,7 @@ while True:
     try:
         result, loss_step, _, lr = sess.run([merge_op, loss, train_op, learning_rate],
                                 {handle: train_handle,
-                                 traing_phase: False,
+                                 # traing_phase: False,
                                  keep_rate: nn_params['keep_rate'],
                                  input_swap_noise: nn_params['input_swap_noise'],
                                  noise_std: nn_params['noise_std'],
@@ -226,7 +226,7 @@ while True:
                 try:
                     y_pred_v_result, next_label_result = sess.run([y_pred_v, next_label],
                                         {handle: valid_handle,
-                                         traing_phase: False,
+                                         # traing_phase: False,
                                          keep_rate: nn_params['keep_rate'],
                                          input_swap_noise: nn_params['input_swap_noise'],
                                          noise_std: nn_params['noise_std'],
