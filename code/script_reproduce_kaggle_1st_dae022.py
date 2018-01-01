@@ -16,7 +16,7 @@ nn_params = {
     "input_swap_noise": 0.00,
     "noise_std": 0.0,
     "l2_scale": 0.05,
-    "n_epochs": 1 # 1000
+    "n_epochs": 300 # 1000
 }
 
 
