@@ -106,11 +106,18 @@ def standard_layer(input_layer, n_nodes, std, keep_rate, bn_phase, layer_name, l
     # layer_o = tf.nn.relu(layer_o, name='{}_relu'.format(layer_name))
     # layer_o = tf.nn.dropout(layer_o, keep_rate, name='{}_dropout'.format(layer_name))
     # # layer_o = gaussian_noise_layer(layer_o, std, name='{}_gn'.format(layer_name))
+
+    # layer_o = tf.layers.dense(input_layer,
+    #                           n_nodes,
+    #                           name='{}_dense'.format(layer_name),
+    #                           activation=tf.nn.relu,
+    #                           kernel_regularizer=tf.contrib.layers.l2_regularizer(scale=l2_scale))
     layer_o = tf.layers.dense(input_layer,
                               n_nodes,
                               name='{}_dense'.format(layer_name),
-                              activation=tf.nn.relu,
                               kernel_regularizer=tf.contrib.layers.l2_regularizer(scale=l2_scale))
+    layer_o = tf.layers.batch_normalization(layer_o, name='{}_bn'.format(layer_name), training=bn_phase)
+    layer_o = tf.nn.relu(layer_o, name='{}_relu'.format(layer_name))
     layer_o = tf.nn.dropout(layer_o, keep_rate, name='{}_dropout'.format(layer_name))
     return layer_o
 
@@ -230,7 +237,7 @@ while True:
                                          keep_rate: nn_params['keep_rate'],
                                          input_swap_noise: nn_params['input_swap_noise'],
                                          noise_std: nn_params['noise_std'],
-                                         bn_phase: True})
+                                         bn_phase: False})
                     y_valid_pred = np.hstack((y_valid_pred, y_pred_v_result[:,1]))
                     y_valid_ref = np.hstack((y_valid_ref, next_label_result))
                 except tf.errors.OutOfRangeError:
