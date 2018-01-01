@@ -61,7 +61,7 @@ filenames = [
 
 dataset = tf.data.TFRecordDataset(filenames)
 dataset = dataset.map(_parse_function)
-dataset = dataset.shuffle(buffer_size=200000)
+dataset = dataset.shuffle(buffer_size=500000)
 dataset = dataset.batch(BATCH_SIZE)
 dataset = dataset.repeat(N_EPOCHS)
 iterator = dataset.make_one_shot_iterator()
