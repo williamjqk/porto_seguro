@@ -52,7 +52,8 @@
 - script_reproduce_kaggle_1st_dae019.py: 使用dae018生成的模型预测dae00x2生成的测试集，生成提交到kaggle的文件。会根据dae018不同的名字改里面model_name的名字。(dae017,dae018,dae019都存在一个很蠢的问题，每次都要重新拼接graph、重新处理tfrecord的iterator来兼容新的graph，应该形成一个统一的方案，包括：autoencoder、training、cv、predict)
 - script_reproduce_kaggle_1st_dae020.py: 在dae018的基础上，使用dae00x3生成的（训练集，验证集）+ feedable iterator
 - script_reproduce_kaggle_1st_dae021.py: 使用dae00x5的特征，其他跟dae017一样
-- script_reproduce_kaggle_1st_dae022.py: 前置无监督nn使用dae021，使用dae00x6的(train, valid)特征，
+- script_reproduce_kaggle_1st_dae022.py: 前置无监督nn使用dae021，使用dae00x6的(train, valid)特征；bn层一定要加；
+- script_reproduce_kaggle_1st_dae023.py: 相比dae021增加了bn层，epoch数调到500（快速试一下，稳定后调到1000）
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
