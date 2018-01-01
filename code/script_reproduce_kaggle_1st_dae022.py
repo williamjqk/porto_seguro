@@ -48,12 +48,12 @@ def _parse_function(record):
     return parsed_features["rankgauss_feature"], parsed_features["label"]
 
 filenames1 = [
-    os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x3.tfrecord'),
+    os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x6.tfrecord'),
     # os.path.join(data_path, 'test_rankgauss.tfrecord')
 ]
 
 filenames2 = [
-    os.path.join(data_path, 'valid_rankgauss_porto_seguro_dae00x3.tfrecord'),
+    os.path.join(data_path, 'valid_rankgauss_porto_seguro_dae00x6.tfrecord'),
 ]
 
 with tf.variable_scope("supervised_nn_dataset"):
