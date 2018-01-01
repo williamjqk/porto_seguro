@@ -110,7 +110,7 @@ def standard_layer(input_layer, n_nodes, std, keep_rate, bn_phase, layer_name, l
                               n_nodes,
                               name='{}_dense'.format(layer_name),
                               activation=tf.nn.relu,
-                              kernel_regularizer=tf.layers.l2_regularizer(scale=l2_scale))
+                              kernel_regularizer=tf.layers.contrib.l2_regularizer(scale=l2_scale))
     layer_o = tf.nn.dropout(layer_o, keep_rate, name='{}_dropout'.format(layer_name))
     return layer_o
 
