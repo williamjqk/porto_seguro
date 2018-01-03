@@ -29,6 +29,9 @@ model_root = os.path.join(data_root, "test_model")#"/tmp/test_model"
 
 
 # %% build graph
+import tensorflow as tf
+tf.reset_default_graph()
+
 dae_params = {
     "layers": [1500, 1500, 1500],
     "learning_rate": 3e-3, # 3e-3,
@@ -50,8 +53,6 @@ n_records += sum(1 for _ in tf.python_io.tf_record_iterator(test_filename))
 steps_per_epoch = n_records // BATCH_SIZE
 
 
-import tensorflow as tf
-tf.reset_default_graph()
 def _parse_function(record):
     keys_to_features = {
         "rankgauss_feature": tf.FixedLenFeature((221,), tf.float32, default_value=tf.zeros((221,), dtype=tf.float32)),
