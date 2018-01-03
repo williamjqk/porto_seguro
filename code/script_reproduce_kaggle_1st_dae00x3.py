@@ -26,8 +26,8 @@ from sklearn.model_selection import StratifiedKFold
 '''Data loading & preprocessing
 '''
 
-X_train_raw = pd.read_csv(base_path+'train.csv')
-X_test_raw = pd.read_csv(base_path+'test.csv')
+X_train_raw = pd.read_csv(os.path.join(base_path, 'train.csv'))
+X_test_raw = pd.read_csv(os.path.join(base_path, 'test.csv'))
 
 X_train_raw.columns
 
