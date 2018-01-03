@@ -55,6 +55,7 @@
 - script_reproduce_kaggle_1st_dae022.py: 前置无监督nn使用dae021，使用dae00x6的(train, valid)特征；bn层一定要加；
 - script_reproduce_kaggle_1st_dae023.py: 相比dae021增加了bn层，epoch数调到500（快速试一下，稳定后调到1000）
 - script_reproduce_kaggle_1st_dae024.py: 跟dae022差不多，前置无监督nn使用dae023，使用dae00x6的(train, valid)特征；
+- script_reproduce_kaggle_1st_dae025.py: 和dae017一样，修改了路径名，dae00x2生成的特征
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
