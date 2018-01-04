@@ -57,6 +57,7 @@
 - script_reproduce_kaggle_1st_dae024.py: 跟dae022差不多，前置无监督nn使用dae023，使用dae00x6的(train, valid)特征；
 - script_reproduce_kaggle_1st_dae025.py: 和dae017一样，修改了路径名，dae00x2生成的特征
 - script_reproduce_kaggle_1st_dae026.py: 跟dae024差不多，前置无监督nn使用dae025，使用dae00x3的(train, valid)特征
+- script_reproduce_kaggle_1st_dae028.py: 仿照dae024，前置无监督nn使用dae021，使用dae020b的参数
 
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
