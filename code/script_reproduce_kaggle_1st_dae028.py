@@ -8,7 +8,7 @@ data_path = '/home/tom/data/kaggle/porto_seguro_dae'
 model_name = 'porto_seguro_dae028'
 nn_params = {
     "layers": [1000, 1000],
-    "learning_rate": 1e-4, #1e-3, # 3e-3,
+    "learning_rate": 5e-4, #1e-3, # 3e-3,
     "minibatch_size": 128,
     "learning_rate_decay": 0.995,
     "input_keep_rate": 0.9,
