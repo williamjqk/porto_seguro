@@ -57,8 +57,10 @@ def _parse_function(record):
     return parsed_features["rankgauss_feature"]
 
 filenames = [
-    os.path.join(data_path, 'train_rankgauss.tfrecord'),
-    os.path.join(data_path, 'test_rankgauss.tfrecord')
+    # os.path.join(data_path, 'train_rankgauss.tfrecord'),
+    # os.path.join(data_path, 'test_rankgauss.tfrecord')
+    os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x2.tfrecord'),
+    os.path.join(data_path, 'test_rankgauss_porto_seguro_dae00x2.tfrecord')
 ]
 
 dataset = tf.data.TFRecordDataset(filenames)
@@ -87,7 +89,7 @@ def standard_layer(input_layer, n_nodes, std, keep_rate, bn_phase, layer_name, v
 keep_rate = tf.placeholder_with_default(1.0, shape=())
 input_swap_noise = tf.placeholder_with_default(0.0, shape=())
 noise_std = tf.placeholder_with_default(0.0, shape=())
-bn_phase = tf.placeholder_with_default(True, shape=()) # True for train, False for test(emmm...#TODO)
+bn_phase = tf.placeholder_with_default(False, shape=()) # True for train, False for test(emmm...#TODO)
 
 tf_x = next_feature
 # tf_x = tf.placeholder(tf.float32, [None, in_dim]) #  X_train.shape
