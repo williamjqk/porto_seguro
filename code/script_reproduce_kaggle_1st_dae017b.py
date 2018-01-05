@@ -17,14 +17,14 @@ if not os.path.exists(model_path):
 import os
 import pandas as pd
 import numpy as np
-import hyperopt as hp
-from hyperopt import fmin, rand, tpe, hp, pyll, base, space_eval, Trials
-from hyperopt.pyll import Apply, as_apply, dfs, scope
-from hyperopt.mongoexp import MongoTrials
-from PPMoney.core.utils import proc_run
-from PPMoney.core.model.space import space_lgb_binary, space_update, sample_int
-from PPMoney.core.data import HDFDataSet
-suggest = rand.suggest
+# import hyperopt as hp
+# from hyperopt import fmin, rand, tpe, hp, pyll, base, space_eval, Trials
+# from hyperopt.pyll import Apply, as_apply, dfs, scope
+# from hyperopt.mongoexp import MongoTrials
+# from PPMoney.core.utils import proc_run
+# from PPMoney.core.model.space import space_lgb_binary, space_update, sample_int
+# from PPMoney.core.data import HDFDataSet
+# suggest = rand.suggest
 
 data_root = model_path
 model_root = os.path.join(data_root, "test_model")#"/tmp/test_model"
