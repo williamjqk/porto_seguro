@@ -287,7 +287,7 @@ writer = tf.summary.FileWriter( os.path.join(model_path, 'log'), sess.graph)    
 all_stage = 0
 while True:
     try:
-        next_batch = batch_q.get(timeout=0.01)
+        next_batch = batch_q.get()
         result, loss_step, _, lr = sess.run([merge_op, loss_semi, train_op_semi, learning_rate],
                                 {x_b_noise: next_batch['x_b_noise'],
                                  x_b_raw: next_batch['x_b_raw'],
@@ -299,6 +299,8 @@ while True:
         if all_stage % 100 == 0:
             writer.add_summary(result, all_stage)
             print(f'lr {lr:.8f}, EPOCH {all_stage//steps_per_epoch}, all_stage {all_stage}, MSE {loss_step:.8f}')
+        if all_stage % steps_per_epoch == 0:
+            print(f'QSZIE: {batch_q.qsize()}')
     except tf.errors.OutOfRangeError:
         break
 
