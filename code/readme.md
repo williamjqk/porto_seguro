@@ -61,7 +61,7 @@
 - script_reproduce_kaggle_1st_dae029.py: 基于dae020b1(修改了lr和l2_scale)，前置nn使用dae017b
 *lr:5e-4,l2_scale:0.05过拟合非常快(如果比不加l2_scale得分0.272几乎到300轮最后才收敛)*
 *lr:1e-4,l2:0.05, gini:0.263*
-- script_reproduce_kaggle_1st_dae030.py: 相比dae029多了input_keep_rate
+- script_reproduce_kaggle_1st_dae030.py: 相比dae029多了input_keep_rate *0.260*
 - script_reproduce_kaggle_1st_dae031.py: 相比dae020b1，修改了decay_steps为steps_per_epoch
 
 **看看(dae025,dae026)相比(dae017b,dae020b1)是什么根本的差异导致了结果差很多呢？超参数的细微差别不会导致这么夸张**
