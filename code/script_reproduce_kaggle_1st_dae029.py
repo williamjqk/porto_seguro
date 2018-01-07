@@ -123,8 +123,8 @@ bn_phase = tf.placeholder_with_default(False, shape=()) # True for train, False 
 
 with tf.variable_scope('supervised_nn_layers'):
     # layer1 = standard_layer(tf_x, nn_params["layers"][0], noise_std, keep_rate, bn_phase, 'layer1')
-    layer1 = standard_layer(concat_x, nn_params["layers"][0], noise_std, keep_rate, bn_phase, nn_params['l2_scale'], 'layer1')
-    layer2 = standard_layer(layer1, nn_params["layers"][1], noise_std, keep_rate, bn_phase, nn_params['l2_scale'], 'layer2')
+    layer1 = standard_layer(concat_x, nn_params["layers"][0], noise_std, keep_rate, bn_phase, 'layer1', nn_params['l2_scale'])
+    layer2 = standard_layer(layer1, nn_params["layers"][1], noise_std, keep_rate, bn_phase, 'layer2', nn_params['l2_scale'])
     output = tf.layers.dense(layer2, 2)                     # output layer
     global_step = tf.Variable(0, trainable=False)
 
