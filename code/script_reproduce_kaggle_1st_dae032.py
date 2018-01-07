@@ -152,12 +152,13 @@ import multiprocessing as mp
 from multiprocessing.pool import Pool
 from multiprocessing import Process
 from queue import Queue
+# from multiprocessing.queues import Queue
 batch_q = Queue(maxsize=10000)
 n_swaps = int(X_all.shape[1] * dae_params["input_swap_noise"])
 def func_put_q():
     while True:
         if not batch_q.full():
-            X_batch = X_all[np.random.randint(X_all.shape[0], size=128), :]
+            X_batch = X_all[np.random.randint(X_all.shape[0], size=dae_params['minibatch_size']), :]
             # n_features = [i for i in range(X_0.shape[1])]
             # swap_cols = np.random.randint(X_0.shape[1], size=15)
 
@@ -172,9 +173,35 @@ def func_put_q():
             b_dict = {'x_b_noise': X_batch_noise, 'x_b_raw':X_batch}
             batch_q.put(b_dict)
 
-p = Process(target=func_put_q)
-p.daemon = True
-p.start()
+# def batch_gen_func():
+#     while True:
+#         X_batch = X_all[np.random.randint(X_all.shape[0], size=128), :]
+#         # n_features = [i for i in range(X_0.shape[1])]
+#         # swap_cols = np.random.randint(X_0.shape[1], size=15)
+#
+#         X_batch_noise = np.zeros(X_batch.shape)
+#         for i in range(X_batch.shape[0]):
+#             swap_cols = np.random.randint(X_all.shape[1], size=n_swaps)
+#             one_row = copy.deepcopy(X_batch[i,:])
+#             for i2 in swap_cols:
+#                 one_row[i2] = X_all[np.random.choice(X_all.shape[0]),i2]
+#             X_batch_noise[i,:] = one_row
+#
+#         b_dict = {'x_b_noise': X_batch_noise, 'x_b_raw':X_batch}
+#         yield b_dict
+
+thread1 = threading.Thread(target=func_put_q)
+thread1.daemon = True
+thread1.start()
+
+# import QPhantom
+# from QPhantom.core.data import DataQueue
+# batch_queue = DataQueue(batch_gen_func, capacity=1024, num_worker=8)
+# batch_queue.start()
+
+# p = Process(target=func_put_q)
+# p.daemon = True
+# p.start()
 
 # for i in range(5):
 #     thread1 = threading.Thread(target=func_put_q)
@@ -300,9 +327,11 @@ sess.run(init_op)     # initialize var in graph
 writer = tf.summary.FileWriter( os.path.join(model_path, 'log'), sess.graph)     # write to file
 
 all_stage = 0
-while True:
+# while True:
+for i in range(steps_per_epoch * BATCH_SIZE):
     try:
         next_batch = batch_q.get()
+        # next_batch = next(batch_queue.buffer())
         result, loss_step, _, lr = sess.run([merge_op, loss_semi, train_op_semi, learning_rate],
                                 {x_b_noise: next_batch['x_b_noise'],
                                  x_b_raw: next_batch['x_b_raw'],
