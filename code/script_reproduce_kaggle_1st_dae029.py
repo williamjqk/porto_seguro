@@ -14,7 +14,7 @@ nn_params = {
     "learning_rate": 1e-4, #1e-3, # 3e-3,
     "minibatch_size": 128,
     "learning_rate_decay": 0.995,
-    "keep_rate": 0.7,
+    "keep_rate": 0.5,#0.7,
     "input_swap_noise": 0.00,
     "noise_std": 0.0,
     "l2_scale": 0.05,
