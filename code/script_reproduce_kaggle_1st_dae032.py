@@ -12,6 +12,18 @@ model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
 
+dae_params = {
+    "layers": [1500, 1500, 1500],
+    "learning_rate": 3e-3, # 3e-3,
+    "minibatch_size": 128,
+    "learning_rate_decay": 0.995,
+    "keep_rate": 1.0,#0.8,
+    "input_swap_noise": 0.15,
+    "noise_std": 0.0,
+    "n_epochs": 1000 # 1000
+}
+
+
 # %%
 
 import numpy as np
@@ -131,17 +143,13 @@ print(f'{time.time() - tic}s per 100 batches') # 5.8s per 1000 batches
 # print(X_batch_noise)
 
 # %%
-dae_params = {
-    "layers": [1500, 1500, 1500],
-    "learning_rate": 3e-3, # 3e-3,
-    "minibatch_size": 128,
-    "learning_rate_decay": 0.995,
-    "keep_rate": 1.0,#0.8,
-    "input_swap_noise": 0.15,
-    "noise_std": 0.0,
-    "n_epochs": 1000 # 1000
-}
+import threading
+import multiprocessing as mp
+mutex = threading.Lock()
 
+
+from multiprocessing.pool import Pool
+from multiprocessing import Process
 from queue import Queue
 batch_q = Queue(maxsize=10000)
 n_swaps = int(X_all.shape[1] * dae_params["input_swap_noise"])
@@ -161,17 +169,22 @@ def func_put_q():
                 X_batch_noise[i,:] = one_row
 
             b_dict = {'x_b_noise': X_batch_noise, 'x_b_raw':X_batch}
+            # print('ok')
+            mutex.acquire()
+            # print('2')
             batch_q.put(b_dict)
+            mutex.release()
 
+for i in range(5):
+    thread1 = threading.Thread(target=func_put_q)
+    thread1.daemon = True
+    thread1.start()
+# for i in range(3):
+#     p = Process(target=func_put_q, args=(mutex,))
+#     p.daemon = True
+#     p.start()
 
-import threading
-thread1 = threading.Thread(target=func_put_q)
-thread1.daemon = True
-thread1.start()
-
-# batch_q.get(timeout=0.1)
-
-
+# batch_q.qsize()
 # %% The last cell preprocess data. In this cell, let data go into one model
 import os
 import pandas as pd
@@ -299,7 +312,7 @@ while True:
         if all_stage % 100 == 0:
             writer.add_summary(result, all_stage)
             print(f'lr {lr:.8f}, EPOCH {all_stage//steps_per_epoch}, all_stage {all_stage}, MSE {loss_step:.8f}')
-        if all_stage % steps_per_epoch == 0:
+        if all_stage % 1000 == 0:
             print(f'QSZIE: {batch_q.qsize()}')
     except tf.errors.OutOfRangeError:
         break
