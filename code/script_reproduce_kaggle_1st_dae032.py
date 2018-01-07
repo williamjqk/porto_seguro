@@ -145,7 +145,8 @@ print(f'{time.time() - tic}s per 100 batches') # 5.8s per 1000 batches
 # %%
 import threading
 import multiprocessing as mp
-mutex = threading.Lock()
+# mutex = threading.Lock()
+# mutex = mp.Lock()
 
 
 from multiprocessing.pool import Pool
@@ -169,16 +170,17 @@ def func_put_q():
                 X_batch_noise[i,:] = one_row
 
             b_dict = {'x_b_noise': X_batch_noise, 'x_b_raw':X_batch}
-            # print('ok')
-            mutex.acquire()
-            # print('2')
             batch_q.put(b_dict)
-            mutex.release()
 
-for i in range(5):
-    thread1 = threading.Thread(target=func_put_q)
-    thread1.daemon = True
-    thread1.start()
+p = Process(target=func_put_q)
+p.daemon = True
+p.start()
+
+# for i in range(5):
+#     thread1 = threading.Thread(target=func_put_q)
+#     thread1.daemon = True
+#     thread1.start()
+
 # for i in range(3):
 #     p = Process(target=func_put_q, args=(mutex,))
 #     p.daemon = True
