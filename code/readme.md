@@ -58,7 +58,10 @@
 - script_reproduce_kaggle_1st_dae025.py: 和dae017一样，修改了路径名，dae00x2生成的特征
 - script_reproduce_kaggle_1st_dae026.py: 跟dae024差不多，前置无监督nn使用dae025，使用dae00x3的(train, valid)特征 *0.22*
 - script_reproduce_kaggle_1st_dae028.py: 仿照dae024，前置无监督nn使用dae021，使用dae020b的参数 *0.22*
+- script_reproduce_kaggle_1st_dae029.py: 基于dae020b1(修改了lr和l2_scale)，前置nn使用dae017b
 
+
+**看看(dae025,dae026)相比(dae017b,dae020b1)是什么根本的差异导致了结果差很多呢？超参数的细微差别不会导致这么夸张**
 
 - script_tune_camnugent_dnn.py: script.py脚本里camnugent的tensorflow程序段
 - script_tune_camnugent_dnn_v2.py: 希望使用tf.learn做cv，但是写的很乱
