@@ -328,7 +328,7 @@ writer = tf.summary.FileWriter( os.path.join(model_path, 'log'), sess.graph)    
 
 all_stage = 0
 # while True:
-for i in range(steps_per_epoch * BATCH_SIZE):
+for i in range(steps_per_epoch * N_EPOCHS):
     try:
         next_batch = batch_q.get()
         # next_batch = next(batch_queue.buffer())
