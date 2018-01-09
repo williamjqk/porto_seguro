@@ -220,7 +220,7 @@ while True:
         result, loss_step, _, lr = sess.run([merge_op, loss, train_op, learning_rate],
                                 {handle: train_handle,
                                  # traing_phase: False,
-                                 input_keep_rate: nn_params['input_keep_rate']
+                                 input_keep_rate: nn_params['input_keep_rate'],
                                  keep_rate: nn_params['keep_rate'],
                                  input_swap_noise: nn_params['input_swap_noise'],
                                  noise_std: nn_params['noise_std'],
