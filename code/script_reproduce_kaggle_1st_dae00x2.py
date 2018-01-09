@@ -1,8 +1,8 @@
 # %% this idea is from https://www.kaggle.com/c/porto-seguro-safe-driver-prediction/discussion/44629
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-# base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
-# data_path = '/home/ljc/data/porto_seguro_dae'
+# base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
+# data_path = '/home/tom/data/porto_seguro_dae'
 base_path = '/home/tom/data/kaggle/porto_seguro_input'
 data_path = '/home/tom/data/kaggle/porto_seguro_dae'
 

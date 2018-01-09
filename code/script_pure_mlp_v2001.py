@@ -12,7 +12,7 @@ import gc
 
 print('loading files...')
 
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # train = pd.read_csv(base_path+'train.csv', na_values=-1)
 # test = pd.read_csv(base_path+'test.csv', na_values=-1)
 train = pd.read_csv(base_path+'train_p.csv', na_values=-1)

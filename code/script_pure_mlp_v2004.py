@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 import gc
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 test_dat = pd.read_csv(base_path + 'test.csv')
 train_dat = pd.read_csv(base_path + 'train.csv')
 submission = pd.read_csv(base_path + 'sample_submission.csv')

@@ -1,4 +1,4 @@
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 from datetime import datetime
 from collections import Counter
 import pandas as pd

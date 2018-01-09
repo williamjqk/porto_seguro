@@ -1,6 +1,6 @@
 # %% MY PART (STACKING)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb = pd.read_csv(base_path + 'test_sub_xgb.csv')
@@ -51,7 +51,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171030a.csv.gz', index = F
 
 # %% MY PART (STACKING)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -95,7 +95,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171030b.csv.gz', index = F
 
 # %% add output_kueipo: lb-0.285 # my best lb (2017-11-07)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -141,7 +141,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171030c.csv.gz', index = F
 
 # %% remove camnugent's dnn: lb-0.285, don't improve rank than 'add output_kueipo' (说明没有best的好)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -188,7 +188,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171031a.csv.gz', index = F
 
 # %% add tune camnugent dnn: 名次和分数都没有任何变化(说明没有best的好)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -234,7 +234,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171031b.csv.gz', index = F
 
 # %% replace kueipo and dnn: lb-0.285 # my best lb (325->293) (2017-11-07)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -279,7 +279,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171107a.csv.gz', index = F
 
 # %% add median_rank_submission.csv: 名次没动 肯定不如rank_avg_20171107a 好
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -325,7 +325,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171107b.csv.gz', index = F
 
 # %% 多个.csv取中值median试试： 0.285， 相比rank_avg_20171107a没有任何提高
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -371,7 +371,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171107c.csv.gz', index = F
 
 # %% 跟rank_avg_20171107a几乎一样，只是用的median： 0.285，相比rank_avg_20171107a名次没有任何提高
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -418,7 +418,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171107d.csv.gz', index = F
 # replace 'test_submission.csv' with 'test_ogrellier_xgb.csv'
 # add test_sub_xgb.csv
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -468,7 +468,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171108a.csv.gz', index = F
 
 # %% 修改了rank_avg_20171107a.csv.gz两个xgb_ahar的bug： lb:0.285(名次没有提升)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -512,7 +512,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171108b.csv.gz', index = F
 
 # %% 相比rank_avg_20171107a.csv.gz加强了xgb_ahar, lb:0.285, lb-rank:302->287, mybest:20171108
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -556,7 +556,7 @@ test[['id', 'target']].to_csv(base_path + 'rank_avg_20171108c.csv.gz', index = F
 
 # %% 相比rank_avg_20171108c.csv.gz替换了v2004->v2006, 名次没有任何提升
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
@@ -598,7 +598,7 @@ test['target'] = (2.5*test['xgb_ahar_rank'] + test['xgb_kueipo_rank'] + test['dn
 test[['id', 'target']].to_csv(base_path + 'rank_avg_20171111a.csv.gz', index = False, compression = 'gzip')
 
 # %% 只有lb:0.286
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 import pandas as pd
 import numpy as np
 
@@ -624,7 +624,7 @@ sub.to_csv(base_path + 'rank_avg_20171115a.csv.gz', index = False, compression =
 
 # %% rank_avg_20171108c.csv.gz增加了kagglemix.csv, lb:0.285(kagglemix的权重6或20都是这个分数)
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 # test files
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')

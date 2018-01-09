@@ -14,7 +14,7 @@ from PPMoney.core.data import HDFDataSet
 suggest = rand.suggest
 
 # %%
-data_root = "/home/ljc/data/porto_seguro_dae"
+data_root = "/home/tom/data/porto_seguro_dae"
 train_file = os.path.join(data_root, "a1a")#"data/a1a"
 model_root = os.path.join(data_root, "test_model")#"/tmp/test_model"
 

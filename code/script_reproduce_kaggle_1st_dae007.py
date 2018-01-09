@@ -1,10 +1,10 @@
 # %% this idea is from https://www.kaggle.com/c/porto-seguro-safe-driver-prediction/discussion/44629
 import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 model_name = 'porto_seguro_dae007'
-data_path = '/home/ljc/data/porto_seguro_dae'
+data_path = '/home/tom/data/porto_seguro_dae'
 model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
@@ -110,7 +110,7 @@ test_scores_l, test_predict_kfold, gbdt_model = lgb_cv_scores_testset(lgb, param
 
 print(f'DATASET shapes: X_0.shape, X_1.shape: {X_0.shape, X_1.shape}')
 print(f'gini-avg-score: {np.mean(test_scores_l):.6f}, cv-std: {np.std(test_scores_l):.6f}')
-# dae007: gini-avg-score: 0.286470, cv-std: 0.004508, 
+# dae007: gini-avg-score: 0.286470, cv-std: 0.004508,
 # dae001: gini-avg-score: 0.287981, cv-std: 0.004854, PublicLB: 0.28380, PrivateLB: 0.29065 # NOTE: this result is the same as mjahrer's #1
 
 

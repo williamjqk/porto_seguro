@@ -8,7 +8,7 @@ for the current fold and accross folds.
 It also shows an upsampling method that limits cross-validation overfitting.
 """
 # https://www.kaggle.com/ogrellier/xgb-classifier-upsampling-lb-0-283/code
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from xgboost import XGBClassifier

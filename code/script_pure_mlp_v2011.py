@@ -1,10 +1,10 @@
 # %% XGBOOST and LGB from kaggle kernel https://www.kaggle.com/rshally/porto-xgb-lgb-kfold-lb-0-282¶
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 model_name = 'porto_seguro_v2011'
-data_path = '/home/ljc/data/'
+data_path = '/home/tom/data/'
 model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)

@@ -1,7 +1,7 @@
 # %% https://www.kaggle.com/pavetr/stacking-lb-0-285
 # work with data
 # base_path = '../input/' # your folder
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 import pandas as pd
 train=pd.read_csv(base_path + 'train.csv')
@@ -1464,7 +1464,7 @@ import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 test_dat = pd.read_csv(base_path + 'test.csv')
 train_dat = pd.read_csv(base_path + 'train.csv')
 submission = pd.read_csv(base_path + 'sample_submission.csv')

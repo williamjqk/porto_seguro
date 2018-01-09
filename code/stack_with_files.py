@@ -17,7 +17,7 @@ import lightgbm as lgb
 from sklearn.model_selection import StratifiedKFold
 import gc
 
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
 test_dnn = pd.read_csv(base_path + 'test_tune_camnugent_dnn.csv')
@@ -148,7 +148,7 @@ import lightgbm as lgb
 from sklearn.model_selection import StratifiedKFold
 import gc
 
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 test_xgb_ahar = pd.read_csv(base_path + 'xgb_submit_aharless.csv')
 test_up = pd.read_csv(base_path + 'test_submission.csv')

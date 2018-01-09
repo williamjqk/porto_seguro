@@ -1,6 +1,6 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 import numpy as np
 np.random.seed(20)
 import pandas as pd

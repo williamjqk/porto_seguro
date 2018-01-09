@@ -1,5 +1,5 @@
 # https://www.kaggle.com/aharless/xgboost-cv-lb-284
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 MAX_ROUNDS = 370
 OPTIMIZE_ROUNDS = False
 LEARNING_RATE = 0.07

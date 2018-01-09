@@ -1,7 +1,7 @@
 # %% https://www.kaggle.com/pavetr/stacking-lb-0-285
 # work with data
 # base_path = '../input/' # your folder
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 import pandas as pd
 train=pd.read_csv(base_path + 'train.csv')

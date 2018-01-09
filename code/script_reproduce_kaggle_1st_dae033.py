@@ -2,20 +2,20 @@
 import os
 import numpy as np
 os.environ["CUDA_VISIBLE_DEVICES"] = '2'
-# base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
-# data_path = '/home/tom/data/porto_seguro_dae'
 base_path = '/home/tom/data/kaggle/porto_seguro_input'
 data_path = '/home/tom/data/kaggle/porto_seguro_dae'
 
-model_name = 'porto_seguro_dae031'
+model_name = 'porto_seguro_dae033'
 nn_params = {
     "layers": [1000, 1000],
-    "learning_rate": 5e-4, #1e-3, # 3e-3,
+    "learning_rate": 1e-4, #1e-3, # 3e-3,
     "minibatch_size": 128,
     "learning_rate_decay": 0.995,
-    "keep_rate": 0.7,
+    "input_keep_rate": 0.9,
+    "keep_rate": 0.5,
     "input_swap_noise": 0.00,
     "noise_std": 0.0,
+    "l2_scale": 0.05,#0.05,
     "n_epochs": 300 # 1000
 }
 
@@ -24,7 +24,7 @@ model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
 
-stored_model_name = 'porto_seguro_dae017'
+stored_model_name = 'porto_seguro_dae032'
 stored_model_meta = os.path.join(data_path, stored_model_name, 'dae_model.meta')
 stored_model_path = os.path.join(data_path, stored_model_name)
 
@@ -37,9 +37,8 @@ in_dim = 221 # dimension of tfrecord features
 BATCH_SIZE = nn_params['minibatch_size']
 N_EPOCHS = nn_params['n_epochs']
 learning_rate_decay = nn_params['learning_rate_decay']
-train_filename = os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x3.tfrecord')
+train_filename = os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x6.tfrecord')
 steps_per_epoch = sum(1 for _ in tf.python_io.tf_record_iterator(train_filename)) // BATCH_SIZE
-
 
 def _parse_function(record):
     keys_to_features = {
@@ -51,12 +50,12 @@ def _parse_function(record):
     return parsed_features["rankgauss_feature"], parsed_features["label"]
 
 filenames1 = [
-    os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x3.tfrecord'),
+    os.path.join(data_path, 'train_rankgauss_porto_seguro_dae00x6.tfrecord'),
     # os.path.join(data_path, 'test_rankgauss.tfrecord')
 ]
 
 filenames2 = [
-    os.path.join(data_path, 'valid_rankgauss_porto_seguro_dae00x3.tfrecord'),
+    os.path.join(data_path, 'valid_rankgauss_porto_seguro_dae00x6.tfrecord'),
 ]
 
 with tf.variable_scope("supervised_nn_dataset"):
@@ -89,49 +88,91 @@ train_handle = sess.run(train_iterator.string_handle())
 valid_handle = sess.run(valid_iterator.string_handle())
 
 
-saver = tf.train.import_meta_graph(stored_model_meta, input_map={"denoise_autoencoder/add:0": next_feature})
+# saver = tf.train.import_meta_graph(stored_model_meta, input_map={"denoise_autoencoder/add:0": next_feature})
+saver = tf.train.import_meta_graph(stored_model_meta, input_map={"x_b_noise:0": next_feature})
+
 saver.restore(sess,tf.train.latest_checkpoint(stored_model_path))
 graph = tf.get_default_graph()
-dae_h1 = graph.get_tensor_by_name("denoise_autoencoder/add_1:0")
-dae_h2 = graph.get_tensor_by_name("denoise_autoencoder/add_2:0")
-dae_h3 = graph.get_tensor_by_name("denoise_autoencoder/add_3:0")
-traing_phase = graph.get_tensor_by_name('PlaceholderWithDefault_3:0')
+dae_h1 = graph.get_tensor_by_name("denoise_autoencoder/layer1_relu:0")
+dae_h2 = graph.get_tensor_by_name("denoise_autoencoder/layer2_relu:0")
+dae_h3 = graph.get_tensor_by_name("denoise_autoencoder/layer3_relu:0")
+# traing_phase = graph.get_tensor_by_name('PlaceholderWithDefault_3:0')
 concat_x = tf.concat([dae_h1, dae_h2, dae_h3], axis=1)
 
 
 def gaussian_noise_layer(input_layer, std, name):
     noise = tf.random_normal(shape=tf.shape(input_layer), mean=0.0, stddev=std, dtype=tf.float32, name=name)
     return input_layer + noise
-def standard_layer(input_layer, n_nodes, std, keep_rate, bn_phase, layer_name, vscope_name=None):
-    # with tf.variable_scope(vscope_name): # you can use scope on outside wrapper
-    layer_o = tf.layers.dense(input_layer, n_nodes, name='{}_dense'.format(layer_name))
+def standard_layer(input_layer, n_nodes, std, keep_rate, bn_phase, layer_name, l2_scale=0.0, vscope_name=None):
+    # # with tf.variable_scope(vscope_name): # you can use scope on outside wrapper
+    # layer_o = tf.layers.dense(input_layer, n_nodes, name='{}_dense'.format(layer_name))
+    # # layer_o = tf.layers.batch_normalization(layer_o, name='{}_bn'.format(layer_name), training=bn_phase)
+    # layer_o = tf.nn.relu(layer_o, name='{}_relu'.format(layer_name))
+    # layer_o = tf.nn.dropout(layer_o, keep_rate, name='{}_dropout'.format(layer_name))
+    # # layer_o = gaussian_noise_layer(layer_o, std, name='{}_gn'.format(layer_name))
+
+    # layer_o = tf.layers.dense(input_layer,
+    #                           n_nodes,
+    #                           name='{}_dense'.format(layer_name),
+    #                           activation=tf.nn.relu,
+    #                           kernel_regularizer=tf.contrib.layers.l2_regularizer(scale=l2_scale))
+    layer_o = tf.layers.dense(input_layer,
+                              n_nodes,
+                              name='{}_dense'.format(layer_name),
+                              kernel_regularizer=tf.contrib.layers.l2_regularizer(scale=l2_scale))
     layer_o = tf.layers.batch_normalization(layer_o, name='{}_bn'.format(layer_name), training=bn_phase)
     layer_o = tf.nn.relu(layer_o, name='{}_relu'.format(layer_name))
     layer_o = tf.nn.dropout(layer_o, keep_rate, name='{}_dropout'.format(layer_name))
-    layer_o = gaussian_noise_layer(layer_o, std, name='{}_gn'.format(layer_name))
     return layer_o
 
-keep_rate = tf.placeholder_with_default(1.0, shape=())
-input_swap_noise = tf.placeholder_with_default(0.0, shape=())
-noise_std = tf.placeholder_with_default(0.0, shape=())
-bn_phase = tf.placeholder_with_default(False, shape=()) # True for train, False for test(emmm...#TODO)
+input_keep_rate = tf.placeholder_with_default(1.0, shape=(), name='nn_input_keep_rate')
+keep_rate = tf.placeholder_with_default(1.0, shape=(), name='nn_keep_rate')
+input_swap_noise = tf.placeholder_with_default(0.0, shape=(), name='nn_input_swap_noise')
+noise_std = tf.placeholder_with_default(0.0, shape=(), name='nn_noise_std')
+bn_phase = tf.placeholder_with_default(False, shape=(), name='nn_bn_phase') # True for train, False for test(emmm...#TODO)
 # tf_x = tf.placeholder(tf.float32, [None, in_dim]) #  X_train.shape
 # tf_y = tf.placeholder(tf.int32, None)
 
 with tf.variable_scope('supervised_nn_layers'):
     # layer1 = standard_layer(tf_x, nn_params["layers"][0], noise_std, keep_rate, bn_phase, 'layer1')
-    layer1 = standard_layer(concat_x, nn_params["layers"][0], noise_std, keep_rate, bn_phase, 'layer1')
-    layer2 = standard_layer(layer1, nn_params["layers"][1], noise_std, keep_rate, bn_phase, 'layer2')
+    layer_dropout = tf.nn.dropout(concat_x, input_keep_rate, name='layer_dropout')
+    layer1 = standard_layer(layer_dropout, nn_params["layers"][0], noise_std, keep_rate, bn_phase, 'layer1', nn_params['l2_scale'])
+    layer2 = standard_layer(layer1, nn_params["layers"][1], noise_std, keep_rate, bn_phase, 'layer2', nn_params['l2_scale'])
     output = tf.layers.dense(layer2, 2)                     # output layer
     global_step = tf.Variable(0, trainable=False)
 
 y_pred_v = tf.nn.softmax(output)
-loss = tf.losses.sparse_softmax_cross_entropy(labels=next_label, logits=output)
+loss_cross_entropy = tf.losses.sparse_softmax_cross_entropy(labels=next_label, logits=output)
+
+
+
+
+weights = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'supervised_nn_layers')
+print(f"tf.GraphKeys.TRAINABLE_VARIABLES: {tf.GraphKeys.TRAINABLE_VARIABLES}")
+print("")
+for w in weights:
+    shp = w.get_shape().as_list()
+    print("- {} shape:{} size:{}".format(w.name, shp, np.prod(shp)))
+print(f"tf.GraphKeys.REGULARIZATION_LOSSES: {tf.GraphKeys.REGULARIZATION_LOSSES}")
+print("")
+reg_ws = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES, 'supervised_nn_layers')
+for w in reg_ws:
+    shp = w.get_shape().as_list()
+    print("- {} shape:{} size:{}".format(w.name, shp, np.prod(shp)))
+print("")
+# # Make the loss function `loss_fn` with regularization.
+# cross_entropy = tf.reduce_mean(
+#     tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
+loss = loss_cross_entropy + tf.reduce_sum(reg_ws)
+
+
+
+
 
 initial_learning_rate = nn_params['learning_rate'] #初始学习率
 learning_rate = tf.train.exponential_decay(initial_learning_rate,
                                            global_step=global_step,
-                                           decay_steps=steps_per_epoch, # 11625 steps * 128 per batch
+                                           decay_steps=11625, # 11625 steps * 128 per batch
                                            decay_rate=learning_rate_decay)
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 add_global = global_step.assign_add(1)
@@ -178,7 +219,7 @@ while True:
     try:
         result, loss_step, _, lr = sess.run([merge_op, loss, train_op, learning_rate],
                                 {handle: train_handle,
-                                 traing_phase: False,
+                                 # traing_phase: False,
                                  keep_rate: nn_params['keep_rate'],
                                  input_swap_noise: nn_params['input_swap_noise'],
                                  noise_std: nn_params['noise_std'],
@@ -196,7 +237,10 @@ while True:
                 try:
                     y_pred_v_result, next_label_result = sess.run([y_pred_v, next_label],
                                         {handle: valid_handle,
-                                         traing_phase: False,
+                                         # traing_phase: False,
+                                         keep_rate: nn_params['keep_rate'],
+                                         input_swap_noise: nn_params['input_swap_noise'],
+                                         noise_std: nn_params['noise_std'],
                                          bn_phase: False})
                     y_valid_pred = np.hstack((y_valid_pred, y_pred_v_result[:,1]))
                     y_valid_ref = np.hstack((y_valid_ref, next_label_result))

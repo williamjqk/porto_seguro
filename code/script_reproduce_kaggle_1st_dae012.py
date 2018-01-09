@@ -1,10 +1,10 @@
 # %% this idea is from https://www.kaggle.com/c/porto-seguro-safe-driver-prediction/discussion/44629
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '2'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 model_name = 'porto_seguro_dae009'
-data_path = '/home/ljc/data/porto_seguro_dae'
+data_path = '/home/tom/data/porto_seguro_dae'
 model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
@@ -264,7 +264,7 @@ for i1, (train_index, test_index) in enumerate(skf.split(X_0,y_0)):
         tn_l.append(time.time());print(f"idx_batch, Time cost of {len(tn_l)}: {tn_l[-1] - tn_l[-2]}")
         # _, acc, pred = sess.run([train_op, accuracy, output], {tf_x: X_batch, tf_y: y_batch})
         # _, pred = sess.run([train_op, output], {tf_x: X_batch, tf_y: y_batch})
-        # 
+        #
         # X_batch = X_0[train_index][idx_batch]
         # y_batch = y_0[train_index][idx_batch]
         tn_l.append(time.time());print(f"get batch, Time cost of {len(tn_l)}: {tn_l[-1] - tn_l[-2]}")

@@ -2,10 +2,10 @@
 import os
 import numpy as np
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-base_path = '/home/ljc/mywork/some_test/porto_seguro/input/'
+base_path = '/home/tom/mywork/some_test/porto_seguro/input/'
 
 model_name = 'porto_seguro_dae018'
-data_path = '/home/ljc/data/porto_seguro_dae'
+data_path = '/home/tom/data/porto_seguro_dae'
 model_path = os.path.join(data_path, model_name)
 if not os.path.exists(model_path):
     os.makedirs(model_path)
