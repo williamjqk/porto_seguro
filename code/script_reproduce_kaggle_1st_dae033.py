@@ -172,7 +172,7 @@ loss = loss_cross_entropy + tf.reduce_sum(reg_ws)
 initial_learning_rate = nn_params['learning_rate'] #初始学习率
 learning_rate = tf.train.exponential_decay(initial_learning_rate,
                                            global_step=global_step,
-                                           decay_steps=11625, # 11625 steps * 128 per batch
+                                           decay_steps=steps_per_epoch, # 11625 steps * 128 per batch
                                            decay_rate=learning_rate_decay)
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 add_global = global_step.assign_add(1)
@@ -220,6 +220,7 @@ while True:
         result, loss_step, _, lr = sess.run([merge_op, loss, train_op, learning_rate],
                                 {handle: train_handle,
                                  # traing_phase: False,
+                                 input_keep_rate: nn_params['input_keep_rate']
                                  keep_rate: nn_params['keep_rate'],
                                  input_swap_noise: nn_params['input_swap_noise'],
                                  noise_std: nn_params['noise_std'],
