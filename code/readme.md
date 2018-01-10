@@ -65,6 +65,7 @@
 - script_reproduce_kaggle_1st_dae031.py: 相比dae020b1，修改了decay_steps为steps_per_epoch
 - script_reproduce_kaggle_1st_dae032.py: 使用的应该是swapnoise，其他的跟disscusion里说的应该是一样
 - script_reproduce_kaggle_1st_dae033.py: 前置nn用的dae032，其他的跟dae026差不多
+- script_reproduce_kaggle_1st_dae034.py: 跟dae033一样，换了超参
 
 **看看(dae025,dae026)相比(dae017b,dae020b1)是什么根本的差异导致了结果差很多呢？超参数的细微差别不会导致这么夸张**
 
