@@ -229,7 +229,7 @@ while True:
         if all_stage % 100 == 0:
             writer.add_summary(result, all_stage)
             print(f'lr {lr:.8f}, EPOCH {all_stage//steps_per_epoch}, all_stage {all_stage}, logloss {loss_step:.8f}')
-        if all_stage % 2000 == 0:
+        if all_stage % 1000 == 0:
             y_valid_pred = np.empty(0)
             y_valid_ref = np.empty(0)
             sess.run(valid_iterator.initializer)
